@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Calendario del Oficial de Cumplimiento</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="estilo.css">
+<style>
+/* ── exclusivo del calendario: la rejilla de doce meses ── */
+.anio-envoltura{display:flex;flex-direction:column;gap:9px}
+.anio-envoltura .rotulo{margin:0}
+.anio{display:grid;grid-template-columns:repeat(auto-fill,minmax(198px,1fr));gap:12px}
+.mes{background:var(--panel);border:1px solid var(--linea);border-radius:10px;
+  padding:11px 12px 12px;display:flex;flex-direction:column;gap:9px;
+  min-height:118px;break-inside:avoid;box-shadow:var(--sombra)}
+.mes>h4{margin:0;display:flex;align-items:baseline;justify-content:space-between;gap:8px;
+  font-family:"Space Grotesk",Inter,system-ui,sans-serif;font-size:14.5px;font-weight:700;
+  letter-spacing:-.01em;border-bottom:1px solid var(--linea);padding-bottom:6px}
+.mes>h4 .tri{font-size:10px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--tinta-3);white-space:nowrap}
+.mes.hoy{border-color:var(--verde);box-shadow:0 0 0 2px var(--verde-vela)}
+.mes.hoy>h4{border-bottom-color:var(--verde)}
+.mes.hoy>h4 .tri{color:var(--verde-hondo)}
+.obl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.obl li{border-left:3px solid var(--verde);padding-left:8px}
+.obl li.ojo{border-left-color:var(--coral)}
+.obl li.hueco{border-left-style:dashed;border-left-color:var(--linea-fuerte)}
+.obl b{display:block;font-size:12.5px;font-weight:600;line-height:1.3}
+.obl .cuando{display:block;font-size:11.5px;line-height:1.35;color:var(--tinta-2);
+  font-variant-numeric:tabular-nums}
+.obl .cita{margin-left:0;margin-top:2px}
+.mes .nada{margin:0;font-size:11.5px;color:var(--tinta-3)}
+.aviso-hueco{margin:0;padding:9px 19px 12px;font-size:11.5px;color:var(--tinta-3);line-height:1.4}
+.reng dd .apostilla{display:block;font-size:11.5px;color:var(--tinta-3);margin-top:2px}
+
+@media print{
+  .anio-envoltura{gap:5px}
+  .anio-envoltura .rotulo{font-size:7.6pt}
+  .anio{grid-template-columns:repeat(4,1fr);gap:5px}
+  .mes{padding:5px 7px 6px;min-height:0;gap:5px;box-shadow:none;border-radius:6px}
+  .mes>h4{font-size:9pt;padding-bottom:3px}
+  .mes>h4 .tri{font-size:6.2pt}
+  .mes.hoy{box-shadow:none;border-color:var(--verde);border-width:1.5px;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .obl{gap:4px}
+  .obl li{padding-left:5px;border-left-width:2.2px}
+  .obl b{font-size:7.5pt;line-height:1.22}
+  .obl .cuando{font-size:6.9pt;line-height:1.24}
+  .obl .cita{font-size:6.4pt;padding:0 3px;margin-top:1px}
+  .mes .nada{font-size:6.6pt}
+  .aviso-hueco{padding:4px 13px 7px;font-size:7pt}
+  .reng dd .apostilla{font-size:7.6pt}
+}
+</style>
+</head>
+<body>
+<div class="marco">
+
+  <nav class="regreso no-papel">
+    <a href="index.html">← Todas las herramientas</a>
+    <span>Herramienta 5.2 · Curso Oficial de Cumplimiento</span>
+  </nav>
+
+  <header class="cabeza">
+    <div>
+      <p class="rotulo">Calendario del régimen</p>
+      <h1>Tu año de cumplimiento, mes por mes</h1>
+    </div>
+    <p>Elige tu entidad y su tamaño. La herramienta arma el año que le toca a
+       <b>tu</b> régimen: las fechas que sí son tuyas, las obligaciones continuas que no
+       caben en un mes, y lo que tu ordenamiento sencillamente no contempla.</p>
+  </header>
+
+  <div class="tablero">
+
+    <form class="consola" id="consola" autocomplete="off" onsubmit="return false">
+      <div class="campo">
+        <label for="sector">Tu entidad</label>
+        <select id="sector"></select>
+      </div>
+
+      <div class="campo" id="c-personas">
+        <label for="personas">Personas al servicio de la entidad</label>
+        <input type="number" id="personas" min="0" max="99999" step="1" value="18">
+        <p class="pista">Toda la entidad, no sólo el área de cumplimiento. Cuenta a quienes
+          realizan funciones <b>para la entidad</b>, de manera directa o indirecta a través de
+          empresas de servicios complementarios.</p>
+      </div>
+
+      <div class="campo" id="c-nivel" hidden>
+        <label for="nivel">Nivel de operación</label>
+        <select id="nivel">
+          <option value="1">Nivel I</option>
+          <option value="2" selected>Nivel II</option>
+          <option value="3">Nivel III</option>
+          <option value="4">Nivel IV</option>
+        </select>
+        <p class="pista">En SOCAP el Comité no depende del número de personas, sino del nivel de operación.</p>
+      </div>
+
+      <div class="campo" id="c-socios" hidden>
+        <label for="socios">Socios de la entidad</label>
+        <input type="number" id="socios" min="0" max="9999999" step="1" value="380">
+      </div>
+
+      <div class="campo" id="c-udis" hidden>
+        <label for="udis">Activos totales, en millones de UDIS</label>
+        <input type="number" id="udis" min="0" max="999999" step="1" value="60">
+        <p class="pista">Uniones de crédito es el único régimen con tres condiciones acumuladas.</p>
+      </div>
+
+      <div class="campo">
+        <label for="entidad">Nombre de tu entidad <span class="suave">(opcional)</span></label>
+        <input type="text" id="entidad" maxlength="80" placeholder="Aparece en tu calendario">
+      </div>
+
+      <div class="sep"></div>
+      <div id="resumen"></div>
+
+      <button type="button" class="accion" id="imprimir">↓ Guardar mi calendario en PDF</button>
+      <p class="pista">Se abre el diálogo de impresión. Elige «Guardar como PDF» y te llevas tu año
+        con el nombre de tu entidad y la fecha de emisión.</p>
+    </form>
+
+    <main class="ficha" id="ficha"></main>
+  </div>
+
+  <p class="pie" id="pie"></p>
+</div>
+
+<script src="datos/regimenes.js"></script>
+<script>
+(function(){
+"use strict";
+
+var $ = function(s){ return document.querySelector(s); };
+function esc(s){
+  return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];
+  });
+}
+// Separa el texto de su cita final entre paréntesis: "10 días hábiles (48ª fr. I)"
+function parte(v){
+  var t = String(v == null ? '—' : v).trim();
+  var m = t.match(/^([\s\S]*?)\s*\(([^()]*)\)\s*$/);
+  return m ? { txt: m[1], cita: m[2] } : { txt: t, cita: '' };
+}
+function vacio(v){ return !v || /^—/.test(String(v).trim()); }
+
+function renglon(rot, val, apostilla){
+  var p = parte(val);
+  return '<div class="reng' + (vacio(val) ? ' nulo' : '') + '">' +
+    '<dt>' + esc(rot) + '</dt><dd>' + esc(p.txt) +
+    (p.cita ? '<span class="cita">' + esc(p.cita) + '</span>' : '') +
+    (apostilla ? '<span class="apostilla">' + esc(apostilla) + '</span>' : '') +
+    '</dd></div>';
+}
+function bloque(tit, filas, aviso){
+  return '<section class="bloque"><h3>' + esc(tit) + '</h3><dl>' + filas.join('') + '</dl>' +
+    (aviso ? '<p class="aviso-hueco">' + esc(aviso) + '</p>' : '') + '</section>';
+}
+
+var MESES = ['enero','febrero','marzo','abril','mayo','junio',
+             'julio','agosto','septiembre','octubre','noviembre','diciembre'];
+var TRIM  = [1,1,1,2,2,2,3,3,3,4,4,4];
+
+/* ── días hábiles: lunes a viernes. No descuenta días festivos oficiales,
+      porque el calendario de festivos no vive en las Disposiciones.        */
+function habilN(y, m, n){
+  var d = new Date(y, m, 1), c = 0;
+  while (d.getMonth() === m){
+    var w = d.getDay();
+    if (w !== 0 && w !== 6){ c++; if (c === n) return new Date(d); }
+    d.setDate(d.getDate() + 1);
+  }
+  return null;
+}
+function habilFin(y, m, n){
+  var d = new Date(y, m + 1, 0), c = 0;
+  while (d.getMonth() === m){
+    var w = d.getDay();
+    if (w !== 0 && w !== 6){ c++; if (c === n) return new Date(d); }
+    d.setDate(d.getDate() - 1);
+  }
+  return null;
+}
+function fFecha(d){
+  return d ? d.toLocaleDateString('es-MX', { day:'numeric', month:'long' }) : '';
+}
+function fFechaLarga(d){
+  return d ? d.toLocaleDateString('es-MX', { day:'numeric', month:'long', year:'numeric' }) : '';
+}
+
+/* ── construcción del año: sólo lo que DATA sostiene ── */
+function eventos(clave, anio){
+  var pr = DATA.periodicos[clave], an = DATA.anual[clave];
+  var ev = [], sueltos = [];
+
+  // 1 · Operaciones relevantes, trimestral
+  if (!vacio(pr.relevante_plazo)){
+    var p = parte(pr.relevante_plazo);
+    var alFinal = /[uú]ltimos/i.test(p.txt);
+    [0,3,6,9].forEach(function(m){
+      var ini = alFinal ? habilFin(anio, m, 10) : habilN(anio, m, 1);
+      var fin = alFinal ? habilFin(anio, m, 1)  : habilN(anio, m, 10);
+      ev.push({
+        m: m, titulo: 'Operaciones relevantes', ojo: alFinal, hueco: false,
+        cuando: (alFinal ? 'Últimos diez días hábiles' : 'Primeros diez días hábiles') +
+                ' · del ' + fFecha(ini) + ' al ' + fFecha(fin),
+        cita: p.cita, fecha: fin
+      });
+    });
+  }
+
+  // 2 · Efectivo en dólares, trimestral
+  if (!vacio(pr.dolares_efectivo)){
+    var pd = parte(pr.dolares_efectivo);
+    [0,3,6,9].forEach(function(m){
+      ev.push({
+        m: m, titulo: 'Efectivo en dólares', ojo: false, hueco: true,
+        cuando: 'Trimestral · esta celda del compilado no fija los días del mes',
+        cita: pd.cita, fecha: null
+      });
+    });
+  }
+
+  // 3 · Transferencias internacionales, mensual
+  if (!vacio(pr.transferencias_int)){
+    var pt = parte(pr.transferencias_int);
+    for (var m3 = 0; m3 < 12; m3++){
+      var v = habilN(anio, m3, 15);
+      ev.push({
+        m: m3, titulo: 'Transferencias internacionales', ojo: false, hueco: false,
+        cuando: 'Mensual · por el mes anterior, dentro de los 15 días hábiles siguientes · ≈ ' + fFecha(v),
+        cita: pt.cita, fecha: v
+      });
+    }
+  }
+
+  // 4 · Otros del régimen: se coloca lo que trae periodicidad; lo demás va aparte
+  if (!vacio(pr.otros)){
+    String(pr.otros).split(';').forEach(function(frag){
+      frag = frag.trim();
+      if (!frag || /^—/.test(frag)) return;
+      var pf = parte(frag);
+      var rot = pf.txt.split(':')[0].replace(/,\s*trimestral\s*$/i, '').trim();
+      rot = rot.charAt(0).toUpperCase() + rot.slice(1);
+      if (/trimestral/i.test(pf.txt)){
+        [0,3,6,9].forEach(function(m){
+          ev.push({ m:m, titulo: rot, ojo:false, hueco:true,
+            cuando:'Trimestral · esta celda del compilado no fija los días del mes',
+            cita: pf.cita, fecha: null });
+        });
+      } else if (/abril/i.test(pf.txt)){
+        var ult = /[uú]ltimos diez d[ií]as h[aá]biles/i.test(pf.txt);
+        ev.push({ m:3, titulo: rot, ojo:false, hueco: !ult,
+          cuando: ult ? 'Anual · del ' + fFecha(habilFin(anio,3,10)) + ' al ' + fFecha(habilFin(anio,3,1))
+                      : 'Anual · en abril; el compilado no fija los días',
+          cita: pf.cita, fecha: ult ? habilFin(anio,3,1) : null });
+      } else {
+        sueltos.push(frag);
+      }
+    });
+  }
+
+  // 5 · Entrega de la auditoría anual
+  if (!vacio(an.auditoria) && !vacio(an.entrega_auditoria)){
+    var pe = parte(an.entrega_auditoria);
+    var f = new Date(anio - 1, 11, 31);
+    f.setDate(f.getDate() + 60);
+    ev.push({
+      m: f.getMonth(), titulo: 'Entrega del dictamen de auditoría', ojo: false, hueco: false,
+      cuando: 'Anual · 60 días naturales tras el cierre del ejercicio anterior · ≈ ' + fFecha(f),
+      cita: pe.cita, fecha: f
+    });
+  }
+
+  // dentro del mes: primero lo que tiene día cierto, al final lo que el compilado no fecha
+  ev.sort(function(a, b){
+    if (a.m !== b.m) return a.m - b.m;
+    if (!!a.fecha !== !!b.fecha) return a.fecha ? -1 : 1;
+    if (a.fecha && b.fecha) return a.fecha.getTime() - b.fecha.getTime();
+    return a.titulo.localeCompare(b.titulo, 'es');
+  });
+  return { ev: ev, sueltos: sueltos };
+}
+
+/* ── ¿está obligada a tener Comité? ── */
+function dictamen(clave){
+  var r = DATA.regla[clave];
+  if (r.t === 'sincomite')
+    return { obligada:false, tipo:'sincomite',
+      titulo:'Este régimen no prevé Comité',
+      nota:'No existe Comité de Comunicación y Control en el ordenamiento. La figura es el Representante y dictamina solo.' };
+  if (r.t === 'nivel'){
+    var n = +$('#nivel').value;
+    return n === 1
+      ? { obligada:false, tipo:'nivel', titulo:'Sin obligación de Comité',
+          nota:'Nivel I. Las funciones del Comité recaen en el Oficial de Cumplimiento.' }
+      : { obligada:true, tipo:'nivel', titulo:'Comité obligatorio',
+          nota:'Nivel ' + ['','I','II','III','IV'][n] + '. Sólo el nivel I queda dispensado.' };
+  }
+  if (r.t === 'triple'){
+    var p = +$('#personas').value, s = +$('#socios').value, u = +$('#udis').value;
+    var falla = [];
+    if (!(p < r.n)) falla.push(p + ' personas');
+    if (!(s < r.socios)) falla.push(s + ' socios');
+    if (!(u < r.udis)) falla.push(u + ' millones de UDIS');
+    return falla.length === 0
+      ? { obligada:false, tipo:'triple', titulo:'Sin obligación de Comité',
+          nota:'La entidad cumple las tres condiciones. Las funciones del Comité recaen en el Oficial de Cumplimiento.' }
+      : { obligada:true, tipo:'triple', titulo:'Comité obligatorio',
+          nota:'Las tres condiciones son acumulativas. La entidad se sale por: ' + falla.join(' · ') + '.' };
+  }
+  var pp = +$('#personas').value;
+  return pp < r.n
+    ? { obligada:false, tipo:'personas', titulo:'Sin obligación de Comité',
+        nota:'Menos de ' + r.n + ' personas al servicio de la entidad. Las funciones del Comité recaen en el Oficial de Cumplimiento.' }
+    : { obligada:true, tipo:'personas', titulo:'Comité obligatorio',
+        nota: pp + ' personas al servicio de la entidad. La dispensa aplica por debajo de ' + r.n + '.' };
+}
+
+/* ── los que reportan Relevantes al final del mes, calculados de DATA ── */
+function extremosFinales(){
+  return DATA.sectores.filter(function(s){
+    var v = DATA.periodicos[s.clave].relevante_plazo;
+    return !vacio(v) && /[uú]ltimos/i.test(v);
+  }).map(function(s){ return s.clave; });
+}
+function nombreCorto(clave){
+  var s = DATA.sectores.find(function(x){ return x.clave === clave; });
+  return s ? s.nombre.split('(')[0].trim().replace(/,$/, '') : clave;
+}
+function enumera(arr){
+  if (arr.length <= 1) return arr.join('');
+  return arr.slice(0, -1).join(', ') + ' y ' + arr[arr.length - 1];
+}
+
+function pintarMes(m, lista, anio, hoy){
+  var esHoy = (anio === hoy.getFullYear() && m === hoy.getMonth());
+  var cuerpo = lista.length
+    ? '<ul class="obl">' + lista.map(function(e){
+        return '<li class="' + (e.ojo ? 'ojo' : '') + (e.hueco ? ' hueco' : '') + '">' +
+          '<b>' + esc(e.titulo) + '</b>' +
+          '<span class="cuando">' + esc(e.cuando) +
+          (e.cita ? '<span class="cita">' + esc(e.cita) + '</span>' : '') +
+          '</span></li>';
+      }).join('') + '</ul>'
+    : '<p class="nada">Sin obligación con fecha.</p>';
+  return '<article class="mes' + (esHoy ? ' hoy' : '') + '">' +
+    '<h4>' + esc(MESES[m].charAt(0).toUpperCase() + MESES[m].slice(1)) +
+    '<span class="tri">' + (esHoy ? 'Mes en curso' : 'T' + TRIM[m]) + '</span></h4>' +
+    cuerpo + '</article>';
+}
+
+function pintar(){
+  var clave = $('#sector').value;
+  var s  = DATA.sectores.find(function(x){ return x.clave === clave; });
+  var g  = DATA.gobierno[clave], pr = DATA.periodicos[clave];
+  var de = DATA.deteccion[clave], an = DATA.anual[clave];
+  var r  = DATA.regla[clave];
+
+  $('#c-personas').hidden = (r.t === 'nivel' || r.t === 'sincomite');
+  $('#c-nivel').hidden    = (r.t !== 'nivel');
+  $('#c-socios').hidden   = (r.t !== 'triple');
+  $('#c-udis').hidden     = (r.t !== 'triple');
+
+  var d = dictamen(clave);
+  var hoy = new Date(); hoy.setHours(0,0,0,0);
+  var anio = hoy.getFullYear();
+
+  var res = eventos(clave, anio);
+  var ev = res.ev, sueltos = res.sueltos;
+
+  // la más próxima contando desde hoy
+  function clave_orden(e, y){ return e.fecha ? e.fecha : new Date(y, e.m, 1); }
+  var prox = null, proxAnio = anio;
+  for (var i = 0; i < ev.length; i++){
+    if (clave_orden(ev[i], anio) >= hoy){ prox = ev[i]; break; }
+  }
+  if (!prox){
+    var sig = eventos(clave, anio + 1).ev;
+    if (sig.length){ prox = sig[0]; proxAnio = anio + 1; }
+  }
+
+  var textoProx = prox
+    ? 'La más próxima: ' + prox.titulo + ', en ' + MESES[prox.m] +
+      (proxAnio !== anio ? ' de ' + proxAnio : '') + '. ' + prox.cuando + '.'
+    : 'Tu régimen no tiene ninguna obligación con fecha fija en el calendario.';
+
+  var finales = extremosFinales();
+  var esFinal = finales.indexOf(clave) !== -1;
+  var otrosFinales = finales.filter(function(k){ return k !== clave; });
+
+  $('#resumen').innerHTML =
+    '<div class="veredicto con"><span class="cifra">' + ev.length +
+    (ev.length === 1 ? ' obligación con fecha' : ' obligaciones con fecha') + ' en ' + anio +
+    '</span><p>' + esc(textoProx) + '</p></div>';
+
+  // avisos del extremo del mes en Relevantes
+  var avisoExtremo = '';
+  if (!vacio(pr.relevante_plazo)){
+    avisoExtremo = esFinal
+      ? '<div class="veredicto sin"><span class="cifra">Tus Relevantes van al final del mes</span>' +
+        '<p>Presentas en los <b>últimos</b> diez días hábiles de enero, abril, julio y octubre. ' +
+        'Los demás regímenes del sector financiero que sí reportan Relevantes las presentan ' +
+        'en los <b>primeros</b> diez días hábiles del mismo mes. ' +
+        'Si vienes de uno de ellos, éste es el error que se comete al cambiar de sector.</p></div>'
+      : '<div class="veredicto con"><span class="cifra">Tus Relevantes van al principio del mes</span>' +
+        '<p>Presentas en los <b>primeros</b> diez días hábiles de enero, abril, julio y octubre. ' +
+        'Cuidado: ' + esc(enumera(otrosFinales.map(nombreCorto))) + ' presentan en los <b>últimos</b> diez días hábiles ' +
+        'del mismo mes. Mismo calendario, extremo contrario.</p></div>';
+  }
+
+  // franja continua: se dispara cuando se dispara
+  var continuas = [
+    renglon('Inusuales · plazo', de.inusual_plazo),
+    renglon('Desde cuándo cuenta', de.desde_cuando),
+    renglon('Veinticuatro horas', de.veinticuatro_horas),
+    renglon('Internas preocupantes', de.internas_preocupantes)
+  ];
+
+  // una vez al año, sin fecha fija en la norma
+  var anuales = [
+    renglon('Capacitación', an.capacitacion),
+    renglon('Actualización del EBR', an.ebr_actualizacion)
+  ];
+  if (!vacio(an.auditoria)) anuales.push(renglon('Ejercicio auditado', an.auditoria));
+  if (d.obligada){
+    anuales.push(renglon('Sesiones del Comité',
+      'El Comité dictamina; este compilado no fija periodicidad de sesiones.',
+      'Programa las sesiones para no rebasar el plazo del dictamen del renglón anterior.'));
+  } else {
+    anuales.push(renglon('Dictamen sin Comité',
+      d.tipo === 'sincomite'
+        ? 'Dictaminas tú, como Representante, y lo documentas.'
+        : 'Sin Comité, dictaminas tú y lo documentas: las funciones del Comité recaen en el Oficial de Cumplimiento.'));
+    if (!vacio(g.funcion_no_trasladada))
+      anuales.push(renglon('Función que NO se te traslada', g.funcion_no_trasladada));
+  }
+
+  // referencia literal
+  var referencia = [
+    renglon('Relevantes · plazo', pr.relevante_plazo),
+    renglon('Relevantes · umbral', pr.relevante_umbral),
+    renglon('Efectivo en dólares', pr.dolares_efectivo),
+    renglon('Transferencias int.', pr.transferencias_int),
+    renglon('Otros de tu régimen', pr.otros),
+    renglon('Auditoría', an.auditoria),
+    renglon('Entrega de la auditoría', an.entrega_auditoria)
+  ];
+
+  // lo que no te aplica
+  var noAplica = [
+    ['Operaciones relevantes', pr.relevante_plazo],
+    ['Efectivo en dólares', pr.dolares_efectivo],
+    ['Transferencias internacionales', pr.transferencias_int],
+    ['Auditoría de cumplimiento', an.auditoria],
+    ['Comité de Comunicación y Control', r.t === 'sincomite' ? '—' : 'sí']
+  ].filter(function(x){ return vacio(x[1]); }).map(function(x){ return x[0]; });
+
+  // rejilla de doce
+  var celdas = [];
+  for (var m = 0; m < 12; m++){
+    celdas.push(pintarMes(m, ev.filter(function(e){ return e.m === m; }), anio, hoy));
+  }
+
+  var entidad = ($('#entidad').value || '').trim();
+  var tam = r.t === 'nivel'     ? 'Nivel ' + ['','I','II','III','IV'][+$('#nivel').value]
+          : r.t === 'sincomite' ? '—'
+          : r.t === 'triple'    ? $('#personas').value + ' personas · ' + $('#socios').value +
+                                  ' socios · ' + $('#udis').value + ' millones de UDIS'
+          : $('#personas').value + ' personas al servicio de la entidad';
+
+  $('#ficha').innerHTML =
+    '<div class="membrete">' +
+      '<p class="marca">GMC360 · 360Educa · Curso Oficial de Cumplimiento</p>' +
+      '<h1>Calendario ' + anio + '</h1>' +
+      '<p class="sub">' + esc(s.nombre) + ' · ' + esc(s.ley) + '</p>' +
+      '<p class="datos">' +
+        (entidad ? '<span><b>Entidad:</b> ' + esc(entidad) + '</span>' : '') +
+        '<span><b>Tamaño declarado:</b> ' + esc(tam) + '</span>' +
+        '<span><b>Comité:</b> ' + esc(d.titulo) + '</span>' +
+        '<span><b>Emitido:</b> ' + esc(fFechaLarga(hoy)) + '</span>' +
+      '</p>' +
+    '</div>' +
+
+    '<div class="banda">' +
+      '<h2>' + esc(s.nombre) + '</h2>' +
+      '<div class="ley">' + esc(s.ley) + ' · ' + ev.length +
+      (ev.length === 1 ? ' obligación con fecha' : ' obligaciones con fecha') + ' en ' + anio + '</div>' +
+      '<span class="sello">Compilado a ' + esc(s.compilado) + '</span>' +
+    '</div>' +
+
+    avisoExtremo +
+
+    '<section class="anio-envoltura">' +
+      '<p class="rotulo">Tu año, de enero a diciembre</p>' +
+      '<div class="anio">' + celdas.join('') + '</div>' +
+    '</section>' +
+
+    bloque('Todo el año · cuando se dispare', continuas,
+      'Estas cuatro no tienen mes: corren desde el hecho que las dispara. Son las que más sanción generan.') +
+
+    bloque('Una vez al año · el mes lo pones tú', anuales,
+      'El ordenamiento fija la frecuencia, no la fecha. Elígela y déjala escrita en tu programa anual.') +
+
+    (sueltos.length
+      ? bloque('Además, en tu régimen', sueltos.map(function(f){
+          var pf = parte(f);
+          return '<div class="reng"><dt>Reporte propio</dt><dd>' + esc(pf.txt) +
+            (pf.cita ? '<span class="cita">' + esc(pf.cita) + '</span>' : '') + '</dd></div>';
+        }), 'Tu ordenamiento los prevé sin periodicidad fija: se presentan cuando ocurre el supuesto.')
+      : '') +
+
+    bloque('De dónde sale cada fecha · texto de tu ordenamiento', referencia) +
+
+    (noAplica.length
+      ? '<section class="exento"><h3>Lo que no te aplica</h3>' +
+        '<p class="intro">Obligaciones que sí existen en otros regímenes del sector financiero y que tu ordenamiento no contempla. No las calendarices.</p>' +
+        '<ul>' + noAplica.map(function(x){ return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></section>'
+      : '') +
+
+    '<div class="cierre">' +
+      '<b>Cómo leer las fechas.</b> Las marcadas con ≈ se calculan contando días hábiles de lunes a viernes: ' +
+      'no descuentan los días festivos oficiales ni los que la Comisión declare inhábiles, porque ese calendario ' +
+      'no está en las Disposiciones. Confírmalos antes de comprometer una entrega. ' +
+      'Las obligaciones con línea punteada existen en tu ordenamiento, pero el compilado no fija los días del mes. ' +
+      '<b>Fechas de compilación.</b> Este calendario se arma con el texto de las Disposiciones compilado a ' +
+      esc(s.compilado) + ' para ' + esc(s.nombre) + '; verifica reformas posteriores. ' +
+      '<b>Material de capacitación, no asesoría legal.</b>' +
+    '</div>';
+
+  try { localStorage.setItem('ocu_sector', clave); } catch (e) {}
+}
+
+/* ── arranque: nunca una pantalla vacía ── */
+var sel = $('#sector');
+sel.innerHTML = DATA.sectores.map(function(x){
+  return '<option value="' + esc(x.clave) + '">' + esc(x.nombre) + '</option>';
+}).join('');
+var inicial = 'BANCOS';
+try { var gsec = localStorage.getItem('ocu_sector'); if (gsec && DATA.regla[gsec]) inicial = gsec; } catch (e) {}
+sel.value = inicial;
+
+$('#consola').addEventListener('input', pintar);
+$('#imprimir').addEventListener('click', function(){ try { window.print(); } catch (e) {} });
+
+$('#pie').innerHTML =
+  'Cada fecha sale del texto de las Disposiciones de Carácter General en materia de PLD/FT del régimen elegido, ' +
+  'con la disposición citada al lado. Las fechas marcadas con <strong>≈</strong> cuentan días hábiles de lunes a viernes ' +
+  'y <strong>no descuentan días festivos oficiales</strong>: el calendario de inhábiles no vive en las Disposiciones. ' +
+  'Las obligaciones con línea punteada existen, pero su celda del compilado no fija los días del mes. ' +
+  'Las obligaciones continuas —inusuales, veinticuatro horas, internas preocupantes— no caben en un mes y van en su propia franja. ' +
+  'Material de capacitación, no asesoría legal.';
+
+pintar();
+})();
+</script>
+</body>
+</html>

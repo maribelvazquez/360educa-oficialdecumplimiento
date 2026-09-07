@@ -1,0 +1,18 @@
+# Herramientas del curso Oficial de Cumplimiento · GMC360 · 360Educa
+# Se incrustan dentro de Thinkific (360educa.com).
+# frame-ancestors autoriza SOLO a esos dominios a mostrarlas en un marco.
+
+[build]
+  publish = "."
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow, noarchive, nosnippet"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Content-Security-Policy = "frame-ancestors 'self' https://360educa.com https://*.360educa.com https://*.thinkific.com"

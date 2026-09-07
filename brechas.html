@@ -1,0 +1,700 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diagnóstico de brechas del Oficial de Cumplimiento</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="estilo.css">
+<style>
+/* ── exclusivo de esta herramienta ─────────────────────────── */
+
+/* marcadores de calificación */
+.marcadores{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:620px){.marcadores{grid-template-columns:1fr}}
+.marcador{background:var(--panel);border:1px solid var(--linea);border-radius:10px;
+  padding:13px 15px;box-shadow:var(--sombra)}
+.marcador .rot{margin:0 0 6px;font-size:10.5px;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--tinta-3)}
+.marcador .num{font-family:"Space Grotesk",Inter,sans-serif;font-size:27px;font-weight:700;
+  line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.marcador .eti{margin:5px 0 0;font-size:12px;color:var(--tinta-2);line-height:1.35}
+.barra{height:6px;border-radius:3px;background:var(--linea);margin-top:9px;overflow:hidden}
+.barra i{display:block;height:100%;background:var(--verde)}
+.marcador.bajo .num{color:var(--coral-hondo)}
+.marcador.bajo .barra i{background:var(--coral)}
+.marcador.alto .num{color:var(--verde-hondo)}
+
+/* preguntas */
+.pregunta{border-top:1px solid var(--linea);padding:13px 19px}
+.bloque .pregunta:first-of-type{border-top:none}
+.pregunta fieldset{border:0;margin:0;padding:0;min-width:0}
+.pregunta legend{padding:0;font-size:14px;font-weight:600;line-height:1.4}
+.pregunta .norma{margin:5px 0 0;font-size:11.5px;color:var(--tinta-3);line-height:1.45}
+.opciones{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+.opciones label{position:relative;font-size:12.5px;color:var(--tinta-2);background:var(--fondo);
+  border:1px solid var(--linea-fuerte);border-radius:20px;padding:4px 13px;cursor:pointer;
+  -webkit-user-select:none;user-select:none;line-height:1.4}
+.opciones label:hover{border-color:var(--verde)}
+.opciones input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.opciones label.elegida{background:var(--verde-vela);border-color:var(--verde);
+  color:var(--verde-hondo);font-weight:600}
+.opciones label.elegida.duda{background:var(--coral-vela);border-color:var(--coral);color:var(--coral-hondo)}
+.opciones label.foco{outline:2.5px solid var(--verde);outline-offset:2px}
+
+/* etiquetas de prioridad */
+.tag{display:inline-block;font-size:10px;font-weight:600;letter-spacing:.07em;
+  text-transform:uppercase;border-radius:4px;padding:2px 7px;white-space:nowrap}
+.tag.t3{background:var(--coral-vela);color:var(--coral-hondo);border:1px solid var(--coral)}
+.tag.t2{background:var(--verde-vela);color:var(--verde-hondo);border:1px solid var(--verde)}
+.tag.t1{background:transparent;color:var(--tinta-3);border:1px solid var(--linea-fuerte)}
+td .tag{margin-bottom:3px}
+.brechas td:first-child{width:118px}
+.brechas td:nth-child(2){width:30%}
+.limpio{padding:15px 19px;font-size:13.5px;color:var(--tinta-2);margin:0}
+
+/* ruta de formación */
+.paso{display:grid;grid-template-columns:34px minmax(0,1fr);gap:4px 14px;
+  padding:12px 19px;border-top:1px solid var(--linea)}
+.bloque .paso:first-of-type{border-top:none}
+.paso .n{font-family:"Space Grotesk",Inter,sans-serif;font-size:19px;font-weight:700;
+  color:var(--verde-hondo);line-height:1.2}
+.paso h4{margin:0 0 2px;font-size:14px;font-weight:600;line-height:1.3}
+.paso p{margin:0;font-size:12.5px;color:var(--tinta-2);line-height:1.45}
+.paso .cubre{margin:5px 0 0;font-size:11.5px;color:var(--tinta-3)}
+
+/* la hoja de respuestas sólo existe en el papel */
+.solo-papel{display:none}
+
+@media print{
+  .marcadores{display:grid !important;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:2px}
+  .marcador{padding:8px 10px;box-shadow:none;break-inside:avoid}
+  .marcador .rot{font-size:7pt} .marcador .num{font-size:17pt} .marcador .eti{font-size:8pt}
+  .barra{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .cuestionario{display:none !important}
+  .solo-papel{display:block !important}
+  .paso{padding:6px 13px;grid-template-columns:26px minmax(0,1fr);break-inside:avoid}
+  .paso .n{font-size:12pt} .paso h4{font-size:9.5pt} .paso p{font-size:8.4pt} .paso .cubre{font-size:7.8pt}
+  .tag{font-size:7pt;padding:1px 5px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .brechas td:first-child{width:88px}
+  .limpio{font-size:9pt;padding:8px 13px}
+}
+</style>
+</head>
+<body>
+
+<div class="marco">
+
+    <nav class="regreso no-papel">
+    <a href="index.html">← Todas las herramientas</a>
+    <span>Herramienta 5.3 · Curso Oficial de Cumplimiento</span>
+  </nav>
+
+  <header class="cabeza">
+    <div>
+      <p class="rotulo">Herramienta 5.3 · Diagnóstico personal</p>
+      <h1>¿Dónde estás parado?</h1>
+    </div>
+    <p>Te acaban de designar. Antes de aprender a hacer el trabajo, hay que saber qué falta. Contesta y la herramienta te devuelve tu calificación, tus brechas ordenadas por lo que primero te puede costar caro, y en qué orden estudiar.</p>
+  </header>
+
+  <div class="tablero">
+
+    <form class="consola" id="consola" autocomplete="off">
+      <div class="campo">
+        <label for="sector">Tu entidad</label>
+        <select id="sector"></select>
+        <p class="pista">Las preguntas del primer bloque se arman con las obligaciones de tu ordenamiento, no de otro.</p>
+      </div>
+
+      <div class="campo" id="c-personas">
+        <label for="personas">Personas al servicio de la entidad</label>
+        <input type="number" id="personas" min="0" max="99999" step="1" value="18">
+        <p class="pista">Toda la entidad, no sólo cumplimiento. Incluye a quienes trabajan para ella de manera indirecta, a través de empresas de servicios complementarios.</p>
+      </div>
+
+      <div class="campo" id="c-nivel" hidden>
+        <label for="nivel">Nivel de operación</label>
+        <select id="nivel">
+          <option value="1">Nivel I</option>
+          <option value="2">Nivel II</option>
+          <option value="3">Nivel III</option>
+          <option value="4">Nivel IV</option>
+        </select>
+      </div>
+
+      <div class="campo" id="c-socios" hidden>
+        <label for="socios">Socios de la entidad</label>
+        <input type="number" id="socios" min="0" max="9999999" step="1" value="380">
+      </div>
+
+      <div class="campo" id="c-udis" hidden>
+        <label for="udis">Activos totales, en millones de UDIS</label>
+        <input type="number" id="udis" min="0" max="999999" step="1" value="60">
+      </div>
+
+      <div class="sep"></div>
+
+      <div class="campo">
+        <label for="entidad">Nombre de tu entidad <span class="suave">(opcional)</span></label>
+        <input type="text" id="entidad" maxlength="80" placeholder="Aparece en tu diagnóstico">
+      </div>
+      <div class="campo">
+        <label for="oficial">Tu nombre <span class="suave">(opcional)</span></label>
+        <input type="text" id="oficial" maxlength="80" placeholder="Aparece en tu diagnóstico">
+      </div>
+
+      <div class="sep"></div>
+      <div id="veredicto"></div>
+      <button type="button" class="accion" id="imprimir"><span aria-hidden="true">↓</span> Guardar mi diagnóstico en PDF</button>
+      <p class="pista">Se abre el diálogo de impresión. Elige «Guardar como PDF». El cuestionario no se imprime: se imprime el diagnóstico.</p>
+      <button type="button" class="accion calma" id="ir">Ver mis brechas</button>
+      <button type="button" class="accion calma" id="limpiar">Poner todo en «no sé»</button>
+    </form>
+
+    <main class="ficha" id="ficha"></main>
+  </div>
+
+  <p class="pie" id="pie"></p>
+</div>
+
+<script src="datos/regimenes.js"></script>
+<script>
+"use strict";
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* Separa el texto de la cita final: "10 días hábiles (48ª fr. I)" */
+function parte(v){
+  const t = String(v == null ? '—' : v).trim();
+  const m = t.match(/^([\s\S]*?)\s*\(([^()]*)\)\s*$/);
+  return m ? { txt: m[1], cita: m[2] } : { txt: t, cita: '' };
+}
+const vacio = v => !v || /^—/.test(String(v).trim());
+const norma = v => {
+  const p = parte(v);
+  return esc(p.txt) + (p.cita ? '<span class="cita">' + esc(p.cita) + '</span>' : '');
+};
+
+/* ── escala de respuestas ──────────────────────────────────── */
+const OPC = [
+  { v:'si',      t:'Sí' },
+  { v:'parcial', t:'En parte' },
+  { v:'no',      t:'No' },
+  { v:'nose',    t:'No sé' }
+];
+const VALOR   = { si:1, parcial:.5, no:0, nose:0 };
+const DEFICIT = { si:0, parcial:.5, no:1, nose:1 };
+const DICHO   = { si:'Sí', parcial:'En parte', no:'No', nose:'No sé' };
+
+const DIM = {
+  A: { nombre:'Tu programa',            pie:'Lo que la entidad tiene o no tiene' },
+  B: { nombre:'Tus conocimientos',      pie:'Lo que necesitas saber para sostenerlo' },
+  C: { nombre:'Tu posición',            pie:'Lo que te dejan o no te dejan hacer' }
+};
+
+const TIER = {
+  3: { tag:'Te expone', larga:'Te expone a una sanción' },
+  2: { tag:'Te frena',  larga:'Te impide hacer tu trabajo' },
+  1: { tag:'Te suma',   larga:'Te hace mejor oficial' }
+};
+
+/* ── los siete bloques del curso ───────────────────────────── */
+const MODULOS = [
+  { id:'m1', nombre:'Tu ordenamiento',        que:'Cuál es la norma que te aplica, cómo se cita, cómo se verifica su vigencia y qué manda la ley que las Disposiciones no dicen.' },
+  { id:'m2', nombre:'Gobierno de la función', que:'Designación, aviso a la Comisión, Comité de Comunicación y Control, supuesto de dispensa y traslado de funciones.' },
+  { id:'m3', nombre:'El enfoque basado en riesgos', que:'Metodología, factores, calificación de clientes, riesgo residual, mitigantes y actualización del documento.' },
+  { id:'m4', nombre:'La cadena de reportes',  que:'Relevantes, inusuales, veinticuatro horas e internas preocupantes: qué se reporta, desde cuándo corre el plazo y cómo se dictamina.' },
+  { id:'m5', nombre:'El ciclo anual',         que:'Capacitación con constancias, auditoría, entrega del dictamen y conservación de expedientes.' },
+  { id:'m6', nombre:'El vecindario normativo',que:'Datos personales, ciberseguridad, antifraude, LFPIORPI de tus clientes, listas y sanciones internacionales, riesgo geopolítico.' },
+  { id:'m7', nombre:'Tu posición en la entidad', que:'A quién reportas, con qué presupuesto, en qué mesas te sientas y cómo se lleva un tema al consejo.' }
+];
+const MOD = {};
+MODULOS.forEach((m, i) => { MOD[m.id] = Object.assign({ orden:i }, m); });
+
+/* ── ¿Comité obligatorio? Mismo criterio que la ficha de régimen ── */
+function comite(clave){
+  const r = DATA.regla[clave];
+  if (r.t === 'sincomite') return { hay:false, sinFigura:true, frase:'' };
+  if (r.t === 'nivel'){
+    const n = +$('#nivel').value;
+    return n === 1
+      ? { hay:false, sinFigura:false, frase:'Nivel I: con lo que declaraste, las funciones del Comité recaen en ti.' }
+      : { hay:true,  sinFigura:false, frase:'Nivel ' + ['','I','II','III','IV'][n] + ': sólo el nivel I queda dispensado, así que el Comité es obligatorio.' };
+  }
+  if (r.t === 'triple'){
+    const p = +$('#personas').value, s = +$('#socios').value, u = +$('#udis').value;
+    const cumple = p < r.n && s < r.socios && u < r.udis;
+    return cumple
+      ? { hay:false, sinFigura:false, frase:'Con lo que declaraste, la entidad cumple las tres condiciones acumuladas y queda sin obligación de Comité.' }
+      : { hay:true,  sinFigura:false, frase:'Las tres condiciones son acumuladas y con lo que declaraste la entidad no las cumple todas: el Comité es obligatorio.' };
+  }
+  const p = +$('#personas').value;
+  return p < r.n
+    ? { hay:false, sinFigura:false, frase:'Con las ' + p + ' personas que declaraste, tu entidad queda dentro del supuesto y no está obligada a tener Comité.' }
+    : { hay:true,  sinFigura:false, frase:'Con las ' + p + ' personas que declaraste, tu entidad queda fuera del supuesto: el Comité es obligatorio.' };
+}
+
+/* ── El cuestionario ───────────────────────────────────────── */
+function armar(clave, cm){
+  const g = DATA.gobierno[clave], an = DATA.anual[clave],
+        de = DATA.deteccion[clave], pr = DATA.periodicos[clave],
+        s  = DATA.sectores.find(x => x.clave === clave);
+  const Q = [];
+  const add = o => { Q.push(o); };
+
+  /* ── A · Tu programa ───────────────────────────────────── */
+  add({ id:'a1', dim:'A', tier:3, mod:'m2', def:'si',
+    texto:'El aviso de mi designación se presentó a la Comisión dentro del plazo, y tengo el acuse.',
+    fuente:g.aviso_designacion, rotulo:'Plazo de tu régimen',
+    brecha:'Designación sin avisar en plazo',
+    arreglo:'Busca el acuse. Si no existe o salió tarde, documenta la fecha real del acuerdo de designación y presenta el aviso hoy con la explicación del desfase: el retraso reconocido se maneja mejor que el descubierto en visita.' });
+
+  add({ id:'a2', dim:'A', tier:3, mod:'m2', def:'parcial',
+    texto: cm.sinFigura
+      ? 'Tengo documentado que mi régimen no prevé Comité y que dictamino solo, y el procedimiento interno está escrito así.'
+      : (cm.hay
+        ? 'El Comité de Comunicación y Control está constituido, sesiona y sus actas están firmadas y resguardadas.'
+        : 'El supuesto que exime a mi entidad de tener Comité está documentado y vigente, y consta que sus funciones recaen en mí.'),
+    fuente: cm.sinFigura ? g.designa : g.umbral_sin_comite,
+    rotulo: cm.sinFigura ? 'Quién designa en tu régimen' : 'Supuesto de dispensa',
+    extra: cm.frase,
+    brecha: cm.sinFigura ? 'Procedimiento del Representante sin documentar'
+          : (cm.hay ? 'Comité sin constituir o sin actas' : 'Dispensa de Comité sin documentar'),
+    arreglo: cm.sinFigura
+      ? 'Escribe el procedimiento: quién detecta, quién te alerta, cómo dictaminas y dónde queda el expediente de cada dictamen. Sin Comité, el papel es tu única defensa.'
+      : (cm.hay
+        ? 'Levanta acta de la próxima sesión aunque no haya nada que reportar, y reconstruye el acuerdo del consejo que constituyó el Comité y designó a sus integrantes.'
+        : 'No basta con estar debajo del umbral: haz que el consejo o el administrador lo haga constar, con el dato que lo sustenta a la fecha, y revísalo cada año.') });
+
+  if (!cm.hay && !cm.sinFigura && !vacio(g.funcion_no_trasladada)){
+    const total = /^Ninguna/i.test(String(g.funcion_no_trasladada).trim());
+    add({ id:'a3', dim:'A', tier:2, mod:'m2', def:'nose',
+      texto: total
+        ? 'Sé que en mi régimen el traslado de funciones del Comité al Oficial de Cumplimiento es total, y que ninguna se quedó en la dirección general.'
+        : 'Sé quién conserva, en mi régimen, la función que el Comité no me traslada, y así está escrito en el manual.',
+      fuente:g.funcion_no_trasladada, rotulo:'Lo que dice tu ordenamiento',
+      brecha:'Traslado de funciones sin delimitar',
+      arreglo:'Ponlo por escrito en el manual: qué funciones del Comité ejerces tú y cuál se queda con la dirección general. Si asumes una que no te toca, la firmas sin facultad.' });
+  }
+
+  add({ id:'a4', dim:'A', tier:3, mod:'m4', def:'si',
+    texto:'Los reportes de operaciones inusuales salen dentro del plazo, contado desde donde mi ordenamiento dice que se cuenta.',
+    fuente:de.inusual_plazo, rotulo:'Plazo de reporte',
+    extra:parte(de.desde_cuando).txt,
+    brecha:'Reportes de inusuales fuera de plazo',
+    arreglo:'Arma un control de fechas por operación: alerta, dictamen y envío. Revisa hoy si algún caso abierto ya pasó los sesenta días de dictamen; ese es el que te va a doler.' });
+
+  add({ id:'a5', dim:'A', tier:3, mod:'m4', def:'parcial',
+    texto:'Existe un procedimiento de reporte de veinticuatro horas y alguien de la entidad ya lo ejecutó, no sólo lo leyó.',
+    fuente:de.veinticuatro_horas, rotulo:'Reporte urgente',
+    brecha:'Procedimiento de veinticuatro horas sin probar',
+    arreglo:'Haz un simulacro esta semana: quién detecta fuera de horario, a quién llama, quién firma y quién transmite. Un procedimiento que nadie ha ejecutado no existe.' });
+
+  if (!vacio(pr.relevante_plazo)){
+    add({ id:'a6', dim:'A', tier:3, mod:'m4', def:'si',
+      texto:'Los reportes de operaciones relevantes se envían completos y dentro de la ventana trimestral, incluso cuando no hubo operaciones.',
+      fuente:pr.relevante_plazo, rotulo:'Ventana de envío',
+      extra:parte(pr.relevante_umbral).txt,
+      brecha:'Reportes relevantes incompletos o tardíos',
+      arreglo:'Verifica los cuatro envíos del último año contra los acuses. El reporte «en ceros» también se presenta: no enviarlo se lee como omisión, no como ausencia de operaciones.' });
+  } else if (!vacio(pr.otros)){
+    add({ id:'a6', dim:'A', tier:3, mod:'m4', def:'nose',
+      texto:'Los reportes periódicos propios de mi régimen se envían completos y dentro de la ventana que fija mi ordenamiento.',
+      fuente:pr.otros, rotulo:'Reporte de tu régimen',
+      brecha:'Reportes periódicos del régimen sin control',
+      arreglo:'Calendariza la ventana de envío del año y guarda cada acuse en el mismo lugar. Tu régimen tiene pocos reportes periódicos: por eso mismo no hay excusa para fallar uno.' });
+  }
+
+  add({ id:'a7', dim:'A', tier:2, mod:'m4', def:'parcial',
+    texto:'El personal tiene un canal para reportarme conductas internas preocupantes, y sabe que existe.',
+    fuente:de.internas_preocupantes, rotulo:'Internas preocupantes',
+    brecha:'Sin canal de reporte interno',
+    arreglo:'Define el canal, protégelo de represalias y anúncialo en la capacitación del año. Sin canal, la conducta interna te llega por rumor y no la puedes dictaminar.' });
+
+  add({ id:'a8', dim:'A', tier:3, mod:'m3', def:'parcial',
+    texto:'La metodología de riesgos está documentada y se actualizó hace menos de doce meses.',
+    fuente:an.ebr_actualizacion, rotulo:'Actualización del EBR',
+    brecha:'Metodología de riesgos vencida o inexistente',
+    arreglo:'Fecha el documento vigente. Si pasó de doce meses o no lo encuentras, ese es tu primer entregable: sin EBR no puedes justificar por qué clasificas a un cliente como lo clasificas.' });
+
+  add({ id:'a9', dim:'A', tier:3, mod:'m5', def:'parcial',
+    texto:'La capacitación de este año ya se impartió y tengo las constancias del personal que la tomó.',
+    fuente:an.capacitacion, rotulo:'Capacitación anual',
+    brecha:'Capacitación del año sin impartir o sin constancias',
+    arreglo:'La capacitación sin constancia no se puede acreditar. Recupera listas, evaluaciones y fechas del último curso; si el año va corrido y no hay curso, agéndalo antes del cierre.' });
+
+  if (!vacio(an.auditoria)){
+    add({ id:'a10', dim:'A', tier:3, mod:'m5', def:'parcial',
+      texto:'La auditoría de cumplimiento del ejercicio se realizó por quien mi ordenamiento permite, y su dictamen se entregó a la Comisión dentro del plazo.',
+      fuente:an.auditoria, rotulo:'Auditoría',
+      extra: vacio(an.entrega_auditoria) ? '' : 'Entrega: ' + parte(an.entrega_auditoria).txt + ' (' + parte(an.entrega_auditoria).cita + ')',
+      brecha:'Auditoría anual sin realizar o sin entregar en plazo',
+      arreglo:'Dos cosas distintas fallan aquí. Verifica quién la firmó, porque una auditoría hecha por quien no puede hacerla vale lo mismo que no haberla hecho; y verifica el acuse, porque el plazo de entrega corre desde el cierre del ejercicio, no desde que el auditor te entrega a ti.' });
+  }
+
+  add({ id:'a12', dim:'A', tier:3, mod:'m5', def:'parcial',
+    texto:'Los expedientes y la documentación de operaciones se conservan por el plazo que fija mi ordenamiento, y sé dónde están.',
+    fuente:an.conservacion, rotulo:'Conservación',
+    brecha:'Conservación de expedientes sin control',
+    arreglo:'Levanta el inventario: qué se guarda, dónde, en qué formato y desde cuándo corre el plazo de cada documento. Si está repartido entre sucursales y un servidor, escríbelo antes de que te lo pregunten.' });
+
+  if (!vacio(g.certificacion)){
+    add({ id:'a13', dim:'A', tier:3, mod:'m2', def:'no',
+      texto:'Cuento con la certificación que mi ordenamiento exige para el Oficial de Cumplimiento, o ya tengo fecha de examen.',
+      fuente:g.certificacion, rotulo:'Certificación',
+      brecha:'Sin certificación exigida por el ordenamiento',
+      arreglo:'Tu régimen es de los pocos que la exigen. Revisa la convocatoria vigente de la Comisión, inscríbete y deja constancia en tu expediente de que el trámite está en curso.' });
+  }
+
+  add({ id:'a14', dim:'A', tier:2, mod:'m4', def:'nose', practica:true,
+    texto:'Mis claves y accesos para transmitir los reportes a la autoridad están vigentes y probados a mi nombre.',
+    brecha:'Accesos de transmisión sin verificar',
+    arreglo:'Entra hoy con tus claves y confirma que el perfil está a tu nombre y no al del oficial anterior. Descubrirlo el día del envío es la forma más tonta de incumplir un plazo.' });
+
+  /* ── B · Tus conocimientos ─────────────────────────────── */
+  add({ id:'b1', dim:'B', tier:2, mod:'m1', def:'parcial',
+    texto:'Sé cuál es el ordenamiento que me aplica, dónde está publicado, cómo se cita una disposición y cómo verifico si sigue vigente.',
+    fuente:s.ley, rotulo:'Tu ley de origen',
+    extra:'El compilado que usa esta herramienta llega a ' + s.compilado + '.',
+    brecha:'No dominas tu propio ordenamiento',
+    arreglo:'Descarga el texto vigente del Diario Oficial, no una copia de internet. Aprende a citar por disposición, no por número de página: así se discute con la autoridad.' });
+
+  add({ id:'b2', dim:'B', tier:2, mod:'m1', def:'parcial',
+    texto:'Distingo qué manda la ley y qué las Disposiciones, y sé que las sanciones no viven en las Disposiciones sino en la ley de mi sector.',
+    fuente:s.ley, rotulo:'Artículo que las funda',
+    brecha:'Confundes ley y Disposiciones',
+    arreglo:'Haz tu propio mapa de dos columnas: obligación en las Disposiciones, y artículo de la ley que la sanciona. Es el documento que te va a pedir tu director general cuando pregunte «¿y qué pasa si no?».' });
+
+  add({ id:'b3', dim:'B', tier:2, mod:'m1', def:'nose',
+    texto:'Sé leer los artículos transitorios de una reforma y determinar desde cuándo me obliga cada cambio.',
+    brecha:'No lees transitorios',
+    arreglo:'Toma la última reforma a tus Disposiciones y lee sólo sus transitorios. Ahí está la fecha real de entrada en vigor y los plazos de gracia; casi todos los incumplimientos por sorpresa nacen de no haberlos leído.' });
+
+  add({ id:'b4', dim:'B', tier:2, mod:'m3', def:'parcial',
+    texto:'Puedo sustentar el enfoque basado en riesgos de mi entidad: factores, calificación, riesgo residual y mitigantes.',
+    fuente:an.ebr_actualizacion, rotulo:'Lo que exige tu régimen',
+    brecha:'No puedes defender tu EBR',
+    arreglo:'Toma tres clientes de riesgo distinto y explica por escrito, en un párrafo cada uno, por qué quedaron ahí. Si no te sale, el problema no es el documento: es la metodología.' });
+
+  add({ id:'b5', dim:'B', tier:2, mod:'m3', def:'parcial',
+    texto:'Entiendo cómo funciona el sistema de monitoreo de mi entidad: qué alertas genera, con qué parámetros y quién los cambia.',
+    brecha:'El sistema es una caja negra para ti',
+    arreglo:'Pide a sistemas o al proveedor la lista de escenarios y sus umbrales, y quién autoriza modificarlos. Vas a firmar dictámenes basados en lo que ese sistema alerta: no puedes ignorar cómo decide.' });
+
+  add({ id:'b6', dim:'B', tier:2, mod:'m4', def:'parcial',
+    texto:'Sé redactar un dictamen de operación inusual que aguante una revisión de la autoridad.',
+    fuente:de.desde_cuando, rotulo:'Plazo para dictaminar',
+    brecha:'No sabes redactar un dictamen',
+    arreglo:'Un dictamen dice qué se detectó, qué se analizó, qué se pidió al cliente, qué contestó y por qué se concluye lo que se concluye. Escribe tres de práctica sobre casos cerrados y compáralos.' });
+
+  add({ id:'b7', dim:'B', tier:1, mod:'m6', def:'parcial',
+    texto:'Conozco cómo conviven mis obligaciones con protección de datos personales, ciberseguridad y prevención de fraude dentro de la entidad.',
+    brecha:'Vecindario interno desconocido',
+    arreglo:'Siéntate con quien lleva datos personales y con quien lleva seguridad de la información. Tu expediente de identificación es un tratamiento de datos y tu monitoreo depende de sistemas: no son áreas ajenas.' });
+
+  add({ id:'b8', dim:'B', tier:1, mod:'m6', def:'nose',
+    texto:'Sé qué es la LFPIORPI y puedo identificar cuándo un cliente mío es sujeto obligado de ella.',
+    brecha:'No distingues el régimen de tus clientes',
+    arreglo:'Aprende las actividades vulnerables del artículo 17. Un cliente que es sujeto obligado y no cumple es un riesgo tuyo, y saber preguntárselo cambia tu debida diligencia.' });
+
+  add({ id:'b9', dim:'B', tier:1, mod:'m6', def:'nose',
+    texto:'Sé cómo se consultan y aplican las listas de personas bloqueadas y las sanciones internacionales, y qué hago si hay coincidencia.',
+    brecha:'Listas y sanciones sin manejo',
+    arreglo:'Documenta de qué fuentes consultas, con qué frecuencia, cómo se resuelve un falso positivo y quién decide un bloqueo. Una coincidencia mal resuelta es de las pocas cosas que escalan a la autoridad el mismo día.' });
+
+  /* ── C · Tu posición ───────────────────────────────────── */
+  add({ id:'c1', dim:'C', tier:2, mod:'m7', def:'parcial',
+    texto:'Reporto de verdad a la dirección general o al consejo: tengo acceso directo y lo que informo queda por escrito.',
+    brecha:'Reportas hacia abajo, no hacia arriba',
+    arreglo:'Si tu línea real de reporte pasa por el área de negocio, escríbelo y llévalo a quien te designó. La independencia del oficial no es un adorno: es lo que hace creíble tu dictamen.' });
+
+  add({ id:'c2', dim:'C', tier:2, mod:'m7', def:'parcial',
+    texto:'Tengo un presupuesto identificado para el programa: capacitación, sistema, auditoría y asesoría.',
+    brecha:'Sin presupuesto propio',
+    arreglo:'Arma el número aunque nadie te lo pida: cuánto cuesta la capacitación, el monitoreo y la auditoría del año. Pedir presupuesto sin cifra es pedir un favor; con cifra es un asunto de gobierno.' });
+
+  add({ id:'c3', dim:'C', tier:2, mod:'m7', def:'nose',
+    texto:'Me invitan a las juntas donde se aprueban productos, canales o líneas de clientes nuevos, antes de lanzarlos.',
+    brecha:'Te enteras de los productos nuevos tarde',
+    arreglo:'Pide un punto fijo en esa agenda. Evaluar el riesgo de un producto que ya se lanzó no es prevención: es explicar por qué falló.' });
+
+  add({ id:'c4', dim:'C', tier:2, mod:'m7', def:'parcial',
+    texto:'Tengo una contraparte con nombre y apellido en sistemas o tecnología, y me responde.',
+    brecha:'Sin contraparte en sistemas',
+    arreglo:'Identifícala esta semana. Todo lo que reportas sale de datos que esa persona controla: si no la conoces, dependes de tickets.' });
+
+  add({ id:'c5', dim:'C', tier:1, mod:'m7', def:'parcial',
+    texto:'Tengo contraparte en jurídico y en recursos humanos, para contrataciones, capacitación y conductas del personal.',
+    brecha:'Sin contraparte en jurídico ni recursos humanos',
+    arreglo:'Recursos humanos te da las constancias de capacitación y los antecedentes del personal; jurídico te acompaña cuando hay que negar o cerrar una relación. Preséntate antes de necesitarlos.' });
+
+  add({ id:'c6', dim:'C', tier:1, mod:'m7', def:'nose',
+    texto:'Conozco a mi contraparte en auditoría interna, en negocio y en tesorería u operaciones, y sé qué revisa cada una.',
+    brecha:'Sin mapa de contrapartes en la entidad',
+    arreglo:'Haz un recorrido de una hora con cada área y anota qué información produce. Tu programa se alimenta de todas ellas y ninguna te va a buscar primero.' });
+
+  add({ id:'c7', dim:'C', tier:1, mod:'m7', def:'parcial',
+    texto:'Ya presenté al menos un tema de cumplimiento al consejo o a la dirección general, y quedó asentado.',
+    brecha:'Nunca has llevado un tema al consejo',
+    arreglo:'Lleva uno pequeño y cerrado: el estado del programa, en una hoja, con tres números. Lo que quede en acta es la prueba de que informaste, y es tu protección personal.' });
+
+  add({ id:'c8', dim:'C', tier:2, mod:'m7', def:'parcial',
+    texto:'Mi designación, mis funciones y mis facultades constan por escrito, y el personal de la entidad sabe quién soy.',
+    fuente:g.designa, rotulo:'Quién te designa',
+    brecha:'Cargo sin respaldo escrito ni visibilidad',
+    arreglo:'Consigue copia del acuerdo que te designó y una descripción de funciones firmada. Después haz que se comunique a toda la entidad: nadie reporta algo a alguien que no sabe que existe.' });
+
+  return Q;
+}
+
+/* ── estado ────────────────────────────────────────────────── */
+let PREGUNTAS = [];
+let RESP = {};
+
+const ETIQUETAS = [
+  { min:90, txt:'Programa maduro',            det:'Sostiene una visita. Cuida que no se caiga por falta de evidencia.' },
+  { min:75, txt:'Programa sólido con huecos', det:'Lo esencial está. Cierra lo que falta antes de que sea hallazgo.' },
+  { min:60, txt:'Programa en construcción',   det:'Hay base, pero todavía no aguanta una revisión completa.' },
+  { min:40, txt:'Programa incompleto',        det:'Faltan piezas que la norma da por hechas. Empieza por las de arriba.' },
+  { min:0,  txt:'Estás expuesto',             det:'El programa no es defendible hoy. Esto se atiende ya, no el trimestre que entra.' }
+];
+const etiqueta = p => ETIQUETAS.find(e => p >= e.min);
+
+function calificar(){
+  const dim = { A:{s:0,t:0}, B:{s:0,t:0}, C:{s:0,t:0} };
+  let s = 0, t = 0;
+  PREGUNTAS.forEach(q => {
+    const v = VALOR[RESP[q.id]] || 0;
+    dim[q.dim].s += q.tier * v; dim[q.dim].t += q.tier;
+    s += q.tier * v; t += q.tier;
+  });
+  const pct = x => x.t ? Math.round(100 * x.s / x.t) : 0;
+  return { global:t ? Math.round(100 * s / t) : 0,
+           A:pct(dim.A), B:pct(dim.B), C:pct(dim.C),
+           n:{ A:PREGUNTAS.filter(q=>q.dim==='A').length,
+               B:PREGUNTAS.filter(q=>q.dim==='B').length,
+               C:PREGUNTAS.filter(q=>q.dim==='C').length } };
+}
+
+function brechas(){
+  return PREGUNTAS
+    .map((q, i) => ({ q, r:RESP[q.id], d:DEFICIT[RESP[q.id]] || 0, i }))
+    .filter(x => x.d > 0)
+    .sort((a, b) =>
+      b.q.tier - a.q.tier ||
+      (b.d - (b.r === 'nose' ? .001 : 0)) - (a.d - (a.r === 'nose' ? .001 : 0)) ||
+      a.i - b.i);
+}
+
+function ruta(bs){
+  const m = {};
+  bs.forEach(b => {
+    const k = b.q.mod;
+    if (!m[k]) m[k] = { mod:MOD[k], tier:0, peso:0, cubre:[] };
+    m[k].tier = Math.max(m[k].tier, b.q.tier);
+    m[k].peso += b.q.tier * b.d;
+    m[k].cubre.push(b.q.brecha);
+  });
+  return Object.values(m).sort((a, b) =>
+    b.tier - a.tier || b.peso - a.peso || a.mod.orden - b.mod.orden);
+}
+
+/* ── pintar el cuestionario (sólo cambia con sector o tamaño) ── */
+function pintarCuestionario(){
+  const grupos = ['A','B','C'].map(d => {
+    const qs = PREGUNTAS.filter(q => q.dim === d);
+    const filas = qs.map(q => {
+      const opciones = OPC.map(o => {
+        const on = RESP[q.id] === o.v;
+        return '<label class="' + (on ? 'elegida' : '') + (o.v === 'nose' ? ' duda' : '') + '">' +
+          '<input type="radio" name="r_' + esc(q.id) + '" value="' + o.v + '"' + (on ? ' checked' : '') + '>' +
+          '<span>' + esc(o.t) + '</span></label>';
+      }).join('');
+      const pie = q.fuente && !vacio(q.fuente)
+        ? '<p class="norma"><b>' + esc(q.rotulo || 'Tu ordenamiento') + ':</b> ' + norma(q.fuente) +
+          (q.extra ? ' · ' + esc(q.extra) : '') + '</p>'
+        : (q.practica
+          ? '<p class="norma">Práctica operativa: no hay disposición que la cite, pero sin esto no puedes cumplir las que sí existen.</p>'
+          : (q.extra ? '<p class="norma">' + esc(q.extra) + '</p>' : ''));
+      return '<div class="pregunta" data-q="' + esc(q.id) + '"><fieldset>' +
+        '<legend>' + esc(q.texto) + ' <span class="tag t' + q.tier + '">' + esc(TIER[q.tier].tag) + '</span></legend>' +
+        pie + '<div class="opciones">' + opciones + '</div></fieldset></div>';
+    }).join('');
+    return '<section class="bloque"><h3>' + esc(DIM[d].nombre) + ' · ' + qs.length + ' preguntas</h3>' + filas + '</section>';
+  }).join('');
+
+  $('#cuestionario').innerHTML =
+    '<p class="nota">Contesta con lo que hay hoy, no con lo que debería haber. <b>«No sé» no es una respuesta neutra:</b> en cumplimiento, no saber cuenta como brecha, porque lo que no sabes no lo puedes defender.</p>' +
+    grupos;
+
+}
+
+/* ── pintar el resultado (cambia con cada respuesta) ────────── */
+function pintarResultado(){
+  const clave = $('#sector').value;
+  const s = DATA.sectores.find(x => x.clave === clave);
+  const c = calificar();
+  const bs = brechas();
+  const rt = ruta(bs);
+  const et = etiqueta(c.global);
+  const hoy = new Date().toLocaleDateString('es-MX', { day:'numeric', month:'long', year:'numeric' });
+  const entidad = ($('#entidad').value || '').trim();
+  const oficial = ($('#oficial').value || '').trim();
+  const noSe = PREGUNTAS.filter(q => RESP[q.id] === 'nose').length;
+
+  /* veredicto de la consola */
+  $('#veredicto').innerHTML =
+    '<div class="veredicto ' + (c.global >= 75 ? 'con' : 'sin') + '">' +
+      '<span class="cifra">' + c.global + ' de 100 · ' + esc(et.txt) + '</span>' +
+      '<p>' + esc(et.det) + ' ' + bs.length + ' de ' + PREGUNTAS.length +
+      ' respuestas abren una brecha' + (noSe ? '; ' + noSe + ' de ellas porque no lo sabes' : '') + '.</p>' +
+    '</div>';
+
+  const marcador = (d, val) => {
+    const e = etiqueta(val);
+    return '<div class="marcador ' + (val >= 75 ? 'alto' : (val < 60 ? 'bajo' : '')) + '">' +
+      '<p class="rot">' + esc(DIM[d].nombre) + '</p>' +
+      '<div class="num">' + val + '<span style="font-size:14px;font-weight:500"> / 100</span></div>' +
+      '<div class="barra"><i style="width:' + val + '%"></i></div>' +
+      '<p class="eti">' + esc(DIM[d].pie) + ' · ' + c.n[d] + ' preguntas</p></div>';
+  };
+
+  const tablaBrechas = bs.length
+    ? '<div class="tabla-envoltura"><table class="brechas"><thead><tr>' +
+      '<th>Prioridad</th><th>Brecha</th><th>Qué hacer</th></tr></thead><tbody>' +
+      bs.map((b, i) => {
+        const f = b.q.fuente && !vacio(b.q.fuente) ? parte(b.q.fuente).cita : '';
+        return '<tr><td><span class="tag t' + b.q.tier + '">' + esc(TIER[b.q.tier].tag) + '</span><br>' +
+          '<span style="font-size:11px;color:var(--tinta-3)">' + (i + 1) + ' · ' + esc(DIM[b.q.dim].nombre) + '</span></td>' +
+          '<td><b>' + esc(b.q.brecha) + '</b><br><span style="font-size:11.5px;color:var(--tinta-3)">Respondiste: ' +
+          esc(DICHO[b.r]) + '</span>' + (f ? '<span class="cita">' + esc(f) + '</span>' : '') + '</td>' +
+          '<td>' + esc(b.q.arreglo) + '</td></tr>';
+      }).join('') + '</tbody></table></div>'
+    : '<p class="limpio">No hay brechas abiertas con lo que declaraste. Eso es raro en alguien que acaba de ser designado: vuelve a leer las preguntas donde contestaste «sí» y pregúntate con qué papel lo probarías.</p>';
+
+  const listaRuta = rt.length
+    ? rt.map((r, i) =>
+        '<div class="paso"><div class="n">' + (i + 1) + '</div><div>' +
+        '<h4>' + esc(r.mod.nombre) + (i === 0 ? ' · empieza aquí' : '') + '</h4>' +
+        '<p>' + esc(r.mod.que) + '</p>' +
+        '<p class="cubre">Cierra: ' + esc(r.cubre.join(' · ')) + '</p></div></div>').join('')
+    : '<p class="limpio">Sin brechas declaradas no hay ruta que trazar. Repite el diagnóstico cuando cambie tu entidad o tu ordenamiento.</p>';
+
+  const hoja = '<section class="bloque solo-papel"><h3>Respuestas declaradas</h3>' +
+    '<div class="tabla-envoltura"><table><thead><tr><th>Dimensión</th><th>Pregunta</th><th>Respuesta</th></tr></thead><tbody>' +
+    PREGUNTAS.map(q => '<tr><td>' + esc(DIM[q.dim].nombre) + '</td><td>' + esc(q.texto) +
+      '</td><td>' + esc(DICHO[RESP[q.id]] || '—') + '</td></tr>').join('') +
+    '</tbody></table></div></section>';
+
+  $('#resultado').innerHTML =
+    '<section class="bloque"><h3>Tu calificación</h3>' +
+      '<div style="padding:15px 19px 17px"><div class="marcadores">' +
+      marcador('A', c.A) + marcador('B', c.B) + marcador('C', c.C) + '</div></div></section>' +
+    '<section class="bloque"><h3>Tus brechas, por lo que primero te puede costar</h3>' +
+      '<p class="limpio" style="padding-bottom:0">Primero lo que te expone a una sanción, después lo que te impide trabajar, al final lo que te haría mejor oficial. Dentro de cada grupo, primero lo que no tienes y luego lo que tienes a medias.</p>' +
+      tablaBrechas + '</section>' +
+    '<section class="bloque"><h3>Tu ruta de formación</h3>' + listaRuta + '</section>' +
+    hoja +
+    '<p class="cierre"><b>Cómo se calculó esto.</b> Las preguntas del bloque «Tu programa» se arman con las obligaciones del ordenamiento de ' +
+      esc(s.nombre.toLowerCase()) + ' (' + esc(s.ley) + '), citando la disposición que las funda; el compilado utilizado llega a ' +
+      esc(s.compilado) + ', así que verifica en el Diario Oficial si hubo reformas posteriores. Cada pregunta pesa 3, 2 o 1 según si su incumplimiento te expone a una sanción, te impide hacer tu trabajo o sólo te haría mejor oficial; la calificación es el porcentaje del peso total que alcanzaste. «Sí» vale el peso completo, «en parte» la mitad, y «no» y «no sé» valen cero: en cumplimiento, no saber es una brecha. Donde la norma dice «personas a su servicio» se refiere a las de la ENTIDAD —no a las del área de cumplimiento— e incluye a quienes realizan funciones para ella de manera indirecta, a través de empresas de servicios complementarios. Ninguna de las Disposiciones cita artículo sancionador ni montos: eso vive en la ley de cada ordenamiento. Este diagnóstico es una autoevaluación declarada: no sustituye una auditoría ni verifica evidencia.<br>' +
+      '<b>Material de capacitación, no asesoría legal.</b> GMC360 · 360Educa · ' + esc(hoy) + '</p>';
+
+  /* membrete y banda */
+  $('#encabezado').innerHTML =
+    '<div class="membrete">' +
+      '<p class="marca">GMC360 · 360Educa · Curso Oficial de Cumplimiento</p>' +
+      '<h1>Diagnóstico de brechas del Oficial de Cumplimiento</h1>' +
+      '<p class="sub">' + esc(s.nombre) + ' · ' + esc(s.ley) + '</p>' +
+      '<p class="datos">' +
+        (oficial ? '<span><b>Oficial:</b> ' + esc(oficial) + '</span>' : '') +
+        (entidad ? '<span><b>Entidad:</b> ' + esc(entidad) + '</span>' : '') +
+        '<span><b>Calificación global:</b> ' + c.global + ' de 100 · ' + esc(et.txt) + '</span>' +
+        '<span><b>Emitido:</b> ' + esc(hoy) + '</span>' +
+      '</p></div>' +
+    '<div class="banda">' +
+      '<h2>' + (entidad ? esc(entidad) : esc(s.nombre)) + '</h2>' +
+      '<div class="ley">' + (entidad ? esc(s.nombre) + ' · ' : '') + esc(s.ley) + ' · ' + esc(comiteTexto) + '</div>' +
+      '<span class="sello">Compilado a ' + esc(s.compilado) + '</span>' +
+      '<span class="sello">' + PREGUNTAS.length + ' preguntas contestadas</span>' +
+    '</div>';
+
+  try { localStorage.setItem('ocu_sector', clave); } catch (e) {}
+}
+
+/* ── armado general ────────────────────────────────────────── */
+let comiteTexto = '';
+
+function reconstruir(){
+  const clave = $('#sector').value;
+  const r = DATA.regla[clave];
+  $('#c-personas').hidden = (r.t === 'nivel' || r.t === 'sincomite');
+  $('#c-nivel').hidden    = (r.t !== 'nivel');
+  $('#c-socios').hidden   = (r.t !== 'triple');
+  $('#c-udis').hidden     = (r.t !== 'triple');
+
+  const cm = comite(clave);
+  comiteTexto = cm.sinFigura ? 'Sin Comité en el ordenamiento'
+              : (cm.hay ? 'Comité obligatorio' : 'Sin obligación de Comité');
+
+  const previas = RESP;
+  PREGUNTAS = armar(clave, cm);
+  RESP = {};
+  PREGUNTAS.forEach(q => { RESP[q.id] = previas[q.id] || q.def; });
+
+  pintarCuestionario();
+  pintarResultado();
+}
+
+/* ── arranque ──────────────────────────────────────────────── */
+$('#ficha').innerHTML =
+  '<div id="encabezado"></div>' +
+  '<div class="cuestionario" id="cuestionario"></div>' +
+  '<div id="resultado" style="display:flex;flex-direction:column;gap:17px"></div>';
+
+const cues = $('#cuestionario');
+cues.addEventListener('change', e => {
+  const inp = e.target;
+  if (!inp || inp.type !== 'radio') return;
+  RESP[inp.name.slice(2)] = inp.value;
+  inp.closest('.pregunta').querySelectorAll('.opciones label').forEach(l =>
+    l.classList.toggle('elegida', l.querySelector('input').checked));
+  pintarResultado();
+});
+cues.addEventListener('focusin', e => {
+  if (e.target.type === 'radio') e.target.closest('label').classList.add('foco');
+});
+cues.addEventListener('focusout', e => {
+  if (e.target.type === 'radio') e.target.closest('label').classList.remove('foco');
+});
+
+const sel = $('#sector');
+sel.innerHTML = DATA.sectores.map(x =>
+  '<option value="' + esc(x.clave) + '">' + esc(x.nombre) + '</option>').join('');
+let inicial = 'BANCOS';
+try { const g = localStorage.getItem('ocu_sector'); if (g && DATA.regla[g]) inicial = g; } catch (e) {}
+sel.value = inicial;
+
+sel.addEventListener('change', () => { RESP = {}; reconstruir(); });
+['personas','nivel','socios','udis'].forEach(id =>
+  $('#' + id).addEventListener('change', reconstruir));
+['entidad','oficial'].forEach(id =>
+  $('#' + id).addEventListener('input', pintarResultado));
+
+$('#imprimir').addEventListener('click', () => window.print());
+$('#ir').addEventListener('click', () =>
+  $('#resultado').scrollIntoView({ behavior:'smooth', block:'start' }));
+$('#limpiar').addEventListener('click', () => {
+  PREGUNTAS.forEach(q => { RESP[q.id] = 'nose'; });
+  pintarCuestionario(); pintarResultado();
+});
+
+$('#pie').innerHTML =
+  '<strong>Cómo leer este diagnóstico.</strong> Las preguntas de «Tu programa» salen de las obligaciones de tu propio ordenamiento, con la disposición citada; ninguna se completa con el dato de otro sector, y las que tu régimen no contempla simplemente no aparecen. Las de «Tus conocimientos» y «Tu posición» no citan disposición porque no son obligaciones: son las condiciones sin las cuales no puedes cumplirlas. Es una autoevaluación declarada, no una auditoría: nadie verificó tu evidencia. <strong>Material de capacitación, no asesoría legal.</strong>';
+
+reconstruir();
+</script>
+</body>
+</html>

@@ -1,0 +1,716 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Actas de dictamen del Oficial de Cumplimiento</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="estilo.css">
+<style>
+/* ── exclusivo del generador de actas ─────────────────────── */
+.acta{background:var(--panel);border:1px solid var(--linea);border-radius:10px;
+  padding:26px 30px;box-shadow:var(--sombra)}
+.acta .tit{text-align:center;margin:0 0 3px;font-size:15.5px;font-weight:700;
+  letter-spacing:.02em;text-transform:uppercase;line-height:1.3}
+.acta .subtit{text-align:center;margin:0 0 4px;font-size:13px;color:var(--tinta-2)}
+.acta .folio{text-align:center;margin:0 0 20px;font-size:11px;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--tinta-3)}
+.cl{margin:0 0 14px}
+.cl h4{margin:0 0 4px;font-size:11px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--verde-hondo)}
+.cl p{margin:0 0 7px;text-align:justify;font-size:14px;line-height:1.62}
+.cl p:last-child{margin-bottom:0}
+.cl .lit{margin:8px 0;padding:8px 13px;border-left:3px solid var(--linea-fuerte);
+  background:var(--fondo);font-size:13px;color:var(--tinta-2);text-align:left}
+.cl .lit em{font-style:normal;color:var(--tinta)}
+.hueco{border:1px solid var(--coral);background:var(--coral-vela);border-radius:8px;
+  padding:12px 14px;margin:15px 0;font-size:13px;color:var(--tinta-2);line-height:1.55}
+.hueco b.rot{display:block;color:var(--coral-hondo);font-size:10.5px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
+.hueco p{margin:0 0 6px;text-align:justify}
+.hueco p:last-child{margin-bottom:0}
+.firmas{margin-top:32px;display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:26px}
+.firma{text-align:center;font-size:12px;color:var(--tinta-3)}
+.firma .linea{border-top:1px solid var(--tinta-2);margin:46px 10px 6px}
+.firma b{display:block;color:var(--tinta);font-weight:600;font-size:13px}
+.aviso-tipo{font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--tinta-3);margin:0 0 3px}
+@media print{
+  .acta{border:none;border-radius:0;padding:0;box-shadow:none}
+  .acta .tit{font-size:12pt} .acta .subtit{font-size:9.5pt} .acta .folio{font-size:7.8pt;margin-bottom:13px}
+  .cl{margin-bottom:9px} .cl h4{font-size:8pt;margin-bottom:2px}
+  .cl p{font-size:9.6pt;line-height:1.45;margin-bottom:5px}
+  .cl .lit{font-size:8.8pt;padding:5px 10px;margin:5px 0}
+  .hueco{-webkit-print-color-adjust:exact;print-color-adjust:exact;
+    break-inside:avoid;font-size:8.6pt;padding:8px 11px;margin:10px 0}
+  .hueco b.rot{font-size:7.6pt}
+  .firmas{margin-top:24px;break-inside:avoid} .firma .linea{margin-top:36px}
+  .firma{font-size:8.4pt} .firma b{font-size:9pt}
+}
+</style>
+</head>
+<body>
+<div class="marco">
+
+    <nav class="regreso no-papel">
+    <a href="index.html">← Todas las herramientas</a>
+    <span>Herramienta 5.4 · Curso Oficial de Cumplimiento</span>
+  </nav>
+
+  <header class="cabeza">
+    <div>
+      <p class="rotulo">360Educa · Curso Oficial de Cumplimiento</p>
+      <h1>Actas de dictamen del Oficial de Cumplimiento</h1>
+    </div>
+    <p>Cuando la entidad no está obligada a tener Comité de Comunicación y Control, las funciones del Comité recaen en el Oficial de Cumplimiento, pero la norma no le dio formato para dejar constancia. Esta herramienta redacta el acta que sustituye al acta de sesión, con las citas del régimen que elijas.</p>
+  </header>
+
+  <div class="tablero">
+    <form class="consola" id="consola" autocomplete="off">
+
+      <div class="campo">
+        <label for="sector">Régimen aplicable a la entidad</label>
+        <select id="sector"></select>
+      </div>
+
+      <div class="campo" id="c-personas">
+        <label for="personas">Personas al servicio de la entidad</label>
+        <input type="number" id="personas" min="0" max="99999" step="1" value="18">
+        <p class="pista">Toda la entidad, no sólo el área de cumplimiento. Incluye a quienes realizan funciones para ella de manera indirecta, a través de empresas de servicios complementarios.</p>
+      </div>
+
+      <div class="campo" id="c-nivel" hidden>
+        <label for="nivel">Nivel de operación</label>
+        <select id="nivel">
+          <option value="1">Nivel I</option>
+          <option value="2">Nivel II</option>
+          <option value="3">Nivel III</option>
+          <option value="4">Nivel IV</option>
+        </select>
+        <p class="pista">En SOCAP la dispensa no depende del número de personas, sino del nivel de operación.</p>
+      </div>
+
+      <div class="campo" id="c-socios" hidden>
+        <label for="socios">Socios de la entidad</label>
+        <input type="number" id="socios" min="0" max="9999999" step="1" value="380">
+      </div>
+      <div class="campo" id="c-udis" hidden>
+        <label for="udis">Activos totales, en millones de UDIS</label>
+        <input type="number" id="udis" min="0" max="999999" step="1" value="60">
+        <p class="pista">Uniones de crédito es el único régimen con tres condiciones acumuladas.</p>
+      </div>
+
+      <p class="pista" id="pista-sincomite" hidden></p>
+
+      <div class="sep"></div>
+
+      <div class="campo">
+        <label for="tipo">Tipo de acta</label>
+        <select id="tipo">
+          <option value="inusual">Dictamen de Operación Inusual</option>
+          <option value="interna">Dictamen de Operación Interna Preocupante</option>
+          <option value="supuesto">Constancia de ubicarse en el supuesto sin Comité</option>
+          <option value="funciones">Constancia de funciones que no se trasladan</option>
+        </select>
+      </div>
+
+      <div class="campo">
+        <label for="entidad">Denominación de la entidad</label>
+        <input type="text" id="entidad" maxlength="120" value="Entidad Financiera Modelo, S.A. de C.V.">
+      </div>
+
+      <div class="campo">
+        <label for="folio">Clave o folio interno</label>
+        <input type="text" id="folio" maxlength="60" value="OC/DIC/2026-001">
+      </div>
+
+      <div class="campo">
+        <label for="lugar">Lugar de emisión</label>
+        <input type="text" id="lugar" maxlength="80" value="Ciudad de México">
+      </div>
+
+      <div class="campo">
+        <label for="fecha">Fecha del dictamen</label>
+        <input type="date" id="fecha">
+        <p class="pista">Es la fecha que hace correr el plazo de reporte cuando no hay Comité que sesione.</p>
+      </div>
+
+      <div class="campo" id="c-alerta">
+        <label for="alerta">Fecha de la alerta o de la detección</label>
+        <input type="date" id="alerta">
+      </div>
+
+      <div class="campo">
+        <label for="oficial" id="lb-oficial">Nombre del Oficial de Cumplimiento</label>
+        <input type="text" id="oficial" maxlength="90" value="Nombre del Oficial de Cumplimiento">
+      </div>
+
+      <div class="campo" id="c-dg" hidden>
+        <label for="dg">Nombre del Director General</label>
+        <input type="text" id="dg" maxlength="90" value="Nombre del Director General">
+      </div>
+
+      <div class="campo">
+        <label for="descripcion" id="lb-descripcion">Descripción del hecho analizado</label>
+        <textarea id="descripcion" maxlength="1800"></textarea>
+      </div>
+
+      <div class="campo">
+        <label for="verificacion" id="lb-verificacion">Qué verificó la institución</label>
+        <textarea id="verificacion" maxlength="1800"></textarea>
+      </div>
+
+      <div class="campo" id="c-decision">
+        <label for="decision">Decisión</label>
+        <select id="decision"></select>
+      </div>
+
+      <div class="campo">
+        <label for="motivo" id="lb-motivo">Fundamento de la decisión</label>
+        <textarea id="motivo" maxlength="1800"></textarea>
+      </div>
+
+      <div class="sep"></div>
+      <div id="veredicto"></div>
+      <button type="button" class="accion" id="imprimir">↓ Guardar el acta en PDF</button>
+      <p class="pista">Se abre el diálogo de impresión. Elige «Guardar como PDF» y te llevas el acta membretada.</p>
+    </form>
+
+    <main class="ficha" id="ficha"></main>
+  </div>
+
+  <p class="pie" id="pie"></p>
+</div>
+
+<script src="datos/regimenes.js"></script>
+<script>
+(function(){
+'use strict';
+var $ = function(s){ return document.querySelector(s); };
+function minus(n){ n = String(n || ''); return n.charAt(0).toLowerCase() + n.slice(1); }
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){
+  return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+/* Separa el texto de su cita final: "Tres días hábiles siguientes (37ª)" */
+function parte(v){
+  var t = String(v == null ? '—' : v).trim();
+  var m = t.match(/^([\s\S]*?)\s*\(([^()]*)\)\s*$/);
+  return m ? { txt: m[1], cita: m[2] } : { txt: t, cita: '' };
+}
+function vacio(v){ return !v || /^—/.test(String(v).trim()); }
+/* Texto con su cita pintada, para prosa jurídica */
+function conCita(v){
+  var p = parte(v);
+  return esc(p.txt) + (p.cita ? '<span class="cita">' + esc(p.cita) + '</span>' : '');
+}
+/* Cita sola, para citar el ordenamiento dentro de una frase */
+function soloCita(v){
+  var p = parte(v);
+  return p.cita ? '<span class="cita">' + esc(p.cita) + '</span>' : '';
+}
+function renglon(rot, val){
+  return '<div class="reng' + (vacio(val) ? ' nulo' : '') + '"><dt>' + esc(rot) +
+    '</dt><dd>' + conCita(val) + '</dd></div>';
+}
+function bloque(tit, filas){
+  return '<section class="bloque"><h3>' + esc(tit) + '</h3><dl>' + filas.join('') + '</dl></section>';
+}
+/* Los huecos documentados salen tal cual de DATA, sin los semáforos */
+function hueco(re){
+  var h = (DATA.huecos || []).find(function(x){ return re.test(x); });
+  return h ? h.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/gu, '').replace(/\s{2,}/g, ' ').trim() : '';
+}
+function hallazgo(re){
+  var h = (DATA.hallazgos || []).find(function(x){ return re.test(x); });
+  return h || '';
+}
+
+/* ── fechas ─────────────────────────────────────────────── */
+function leerFecha(v){
+  var m = String(v || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  return m ? new Date(+m[1], +m[2] - 1, +m[3]) : null;
+}
+function largo(d){
+  return d ? d.toLocaleDateString('es-MX', { day:'numeric', month:'long', year:'numeric' }) : '—';
+}
+function iso(d){
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function masNaturales(d, n){ var x = new Date(d.getTime()); x.setDate(x.getDate() + n); return x; }
+function masHabiles(d, n){
+  var x = new Date(d.getTime()), c = 0;
+  while (c < n){ x.setDate(x.getDate() + 1); var w = x.getDay(); if (w !== 0 && w !== 6) c++; }
+  return x;
+}
+
+/* ── textos por tipo de acta ────────────────────────────── */
+var TIPOS = {
+  inusual: {
+    titulo: 'Acta de dictamen — Operación Inusual',
+    lbDesc: 'Descripción de la operación analizada',
+    lbVerif: 'Qué verificó la institución',
+    lbMot: 'Fundamento del dictamen',
+    decisiones: [
+      'Reportar la Operación a la Secretaría, por conducto de la Comisión, como Operación Inusual',
+      'No reportar: la Operación no reúne los elementos para calificarse como Inusual'
+    ],
+    desc: 'Depósitos en efectivo por $182,400.00 M.N. realizados en cinco exhibiciones los días 3, 4 y 5 de marzo, en tres sucursales distintas, por un Cliente cuyo perfil transaccional declarado corresponde a ingresos mensuales de $35,000.00 M.N.',
+    verif: 'Se cotejaron el expediente de identificación del Cliente, su perfil transaccional declarado, el historial de operaciones de los últimos doce meses, la lista de personas bloqueadas y la información pública disponible sobre el origen de los recursos.',
+    mot: 'Las Operaciones se apartan del perfil transaccional declarado por el Cliente sin que exista explicación económica o lícita acreditada en el expediente, y el fraccionamiento de los depósitos no corresponde a la actividad declarada.'
+  },
+  interna: {
+    titulo: 'Acta de dictamen — Operación Interna Preocupante',
+    lbDesc: 'Descripción de la conducta analizada',
+    lbVerif: 'Qué verificó la institución',
+    lbMot: 'Fundamento del dictamen',
+    decisiones: [
+      'Reportar la conducta a la Secretaría, por conducto de la Comisión, como Operación Interna Preocupante',
+      'No reportar: la conducta no reúne los elementos de una Operación Interna Preocupante'
+    ],
+    desc: 'Conducta de una persona al servicio de la entidad adscrita al área de operación, quien en tres ocasiones registró alteraciones en los datos de identificación de un mismo Cliente y omitió integrar el soporte documental exigido por el manual de cumplimiento.',
+    verif: 'Se revisaron las bitácoras del sistema, los expedientes intervenidos, los registros de acceso del usuario y se recabó la manifestación del titular del área a la que se encuentra adscrita la persona.',
+    mot: 'La conducta se aparta de las políticas de identificación y conocimiento del Cliente de la entidad y pudo favorecer la ocultación del origen de los recursos.'
+  },
+  supuesto: {
+    titulo: 'Constancia de ubicación en el supuesto sin Comité',
+    lbDesc: 'Descripción de la situación que acredita el supuesto',
+    lbVerif: 'Qué verificó la institución para acreditarlo',
+    lbMot: 'Fundamento de la constancia',
+    decisiones: [
+      'La entidad se ubica en el supuesto y prescinde del Comité de Comunicación y Control',
+      'La entidad deja de ubicarse en el supuesto y debe integrar el Comité de Comunicación y Control'
+    ],
+    desc: 'Los datos declarados en esta constancia corresponden al corte vigente a la fecha de su emisión y constan en los registros internos de la entidad, de los que se conserva soporte documental.',
+    verif: 'Se revisaron los registros internos que soportan los datos declarados —plantilla al corte, contratos con empresas de servicios complementarios que realizan funciones para la entidad, registros contables y societarios— en lo que resulta aplicable al umbral de este régimen.',
+    mot: 'Las cifras declaradas se acreditan con los registros internos de la entidad y se conservan a disposición de la autoridad.',
+    descSC: 'El ordenamiento aplicable a la entidad no contempla la figura del Comité de Comunicación y Control, de modo que la entidad no tiene umbral que acreditar ni órgano colegiado que integrar en ningún supuesto.',
+    verifSC: 'Se revisó el texto vigente del ordenamiento aplicable a la entidad y el manual de cumplimiento, para constatar que ni uno ni otro prevén Comité de Comunicación y Control.',
+    motSC: 'La inexistencia del órgano deriva del propio ordenamiento y así queda asentada en el manual de cumplimiento de la entidad.'
+  },
+  funciones: {
+    titulo: 'Constancia de funciones no trasladadas',
+    lbDesc: 'Descripción del alcance del traslado de funciones',
+    lbVerif: 'Qué verificó la institución sobre la reserva',
+    lbMot: 'Fundamento de la constancia',
+    decisiones: [],
+    desc: 'Al no estar obligada la entidad a contar con Comité de Comunicación y Control, las funciones que las Disposiciones atribuyen a ese órgano se ejercen por el Oficial de Cumplimiento, con la salvedad que se hace constar en esta acta.',
+    verif: 'Se revisaron el manual de cumplimiento vigente, las actas del órgano de administración relativas a la designación del Oficial de Cumplimiento y la asignación interna de la función que el ordenamiento reserva, en su caso, a otro cargo.',
+    mot: 'La reserva se sostiene en el texto expreso del ordenamiento aplicable y se refleja en el manual de cumplimiento de la entidad.',
+    descNR: 'Al no estar obligada la entidad a contar con Comité de Comunicación y Control, la totalidad de las funciones que las Disposiciones atribuyen a ese órgano se ejercen por el Oficial de Cumplimiento, sin que el ordenamiento reserve función alguna a otro cargo.',
+    motNR: 'El ordenamiento no exceptúa función alguna del traslado, de modo que su ejercicio íntegro queda documentado en el manual de cumplimiento de la entidad.',
+    descSC: 'El ordenamiento aplicable no contempla Comité de Comunicación y Control, de modo que no hay funciones que se trasladen desde ese órgano ni funciones que queden reservadas a otro cargo por efecto del traslado.',
+    verifSC: 'Se revisaron el texto vigente del ordenamiento aplicable y el manual de cumplimiento de la entidad, para constatar que las funciones de dictamen y reporte corresponden desde su origen al Representante.',
+    motSC: 'La inexistencia de funciones trasladables deriva del propio ordenamiento y así queda asentada en el manual de cumplimiento de la entidad.'
+  }
+};
+var DEFAULTS = {};
+Object.keys(TIPOS).forEach(function(k){
+  ['desc','verif','mot','descSC','verifSC','motSC','descNR','motNR'].forEach(function(f){
+    if (TIPOS[k][f]) DEFAULTS[TIPOS[k][f]] = 1;
+  });
+});
+
+/* ── ¿está la entidad en el supuesto sin Comité? ────────── */
+function supuesto(clave){
+  var r = DATA.regla[clave];
+  if (r.t === 'sincomite')
+    return { obligada:false, existe:false, titulo:'Este régimen no prevé Comité',
+      nota:'El ordenamiento no contempla Comité de Comunicación y Control. La figura es el Representante y dictamina por sí mismo.',
+      hechos:'' };
+  if (r.t === 'nivel'){
+    var n = +$('#nivel').value;
+    var rom = ['','I','II','III','IV'][n];
+    return n === 1
+      ? { obligada:false, existe:true, titulo:'Sin obligación de Comité',
+          nota:'Nivel de operación I. Las funciones del Comité recaen en el Oficial de Cumplimiento.',
+          hechos:'la entidad es una Sociedad con nivel de operación I' }
+      : { obligada:true, existe:true, titulo:'Comité obligatorio',
+          nota:'Nivel de operación ' + rom + '. Sólo el nivel I queda dispensado.',
+          hechos:'la entidad tiene nivel de operación ' + rom };
+  }
+  if (r.t === 'triple'){
+    var p = +$('#personas').value, s = +$('#socios').value, u = +$('#udis').value;
+    var cumple = p < r.n && s < r.socios && u < r.udis;
+    var falla = [];
+    if (!(p < r.n)) falla.push(p + ' personas al servicio de la entidad');
+    if (!(s < r.socios)) falla.push(s + ' socios');
+    if (!(u < r.udis)) falla.push(u + ' millones de UDIS en activos');
+    var hechos = 'la entidad cuenta con ' + p + ' personas a su servicio, ' + s +
+      ' socios y activos totales por ' + u + ' millones de UDIS';
+    return cumple
+      ? { obligada:false, existe:true, titulo:'Sin obligación de Comité',
+          nota:'La entidad cumple las tres condiciones acumuladas.', hechos:hechos }
+      : { obligada:true, existe:true, titulo:'Comité obligatorio',
+          nota:'Las tres condiciones son acumuladas. La entidad se sale por: ' + falla.join(' · ') + '.',
+          hechos:hechos };
+  }
+  var pp = +$('#personas').value;
+  return pp < r.n
+    ? { obligada:false, existe:true, titulo:'Sin obligación de Comité',
+        nota:'Menos de ' + r.n + ' personas al servicio de la entidad.',
+        hechos:'la entidad cuenta con ' + pp + ' personas a su servicio, cifra inferior a ' + r.n }
+    : { obligada:true, existe:true, titulo:'Comité obligatorio',
+        nota:pp + ' personas al servicio de la entidad. La dispensa aplica por debajo de ' + r.n + '.',
+        hechos:'la entidad cuenta con ' + pp + ' personas a su servicio' };
+}
+
+/* ── pintar ─────────────────────────────────────────────── */
+function pintar(){
+  var clave = $('#sector').value;
+  var s = DATA.sectores.find(function(x){ return x.clave === clave; });
+  var g = DATA.gobierno[clave], de = DATA.deteccion[clave], an = DATA.anual[clave];
+  var r = DATA.regla[clave];
+  var tipo = $('#tipo').value, T = TIPOS[tipo];
+
+  /* campos que dependen del régimen y del tipo */
+  $('#c-personas').hidden = (r.t === 'nivel' || r.t === 'sincomite');
+  $('#c-nivel').hidden    = (r.t !== 'nivel');
+  $('#c-socios').hidden   = (r.t !== 'triple');
+  $('#c-udis').hidden     = (r.t !== 'triple');
+  $('#c-alerta').hidden   = !(tipo === 'inusual' || tipo === 'interna');
+  $('#c-decision').hidden = (T.decisiones.length === 0);
+
+  var sup = supuesto(clave);
+  var figura = (r.t === 'sincomite') ? 'Representante' : 'Oficial de Cumplimiento';
+  var fnt = g.funcion_no_trasladada;
+  var hayReserva = !vacio(fnt) && !/^ninguna/i.test(String(fnt).trim());
+
+  $('#c-dg').hidden = !(hayReserva && (tipo === 'supuesto' || tipo === 'funciones'));
+  $('#lb-oficial').textContent = 'Nombre del ' + figura;
+  $('#lb-descripcion').textContent = T.lbDesc;
+  $('#lb-verificacion').textContent = T.lbVerif;
+  $('#lb-motivo').textContent = T.lbMot;
+
+  var ps = $('#pista-sincomite');
+  ps.hidden = (r.t !== 'sincomite');
+  if (r.t === 'sincomite')
+    ps.textContent = 'Este régimen no contempla Comité de Comunicación y Control, de modo que no hay supuesto que acreditar: el ' +
+      figura + ' dictamina por sí mismo desde el texto original del ordenamiento.';
+
+  /* decisión */
+  var selD = $('#decision'), previa = selD.value;
+  var opciones = T.decisiones.map(function(o){ return '<option value="' + esc(o) + '">' + esc(o) + '</option>'; }).join('');
+  if (selD.getAttribute('data-tipo') !== tipo){
+    selD.innerHTML = opciones;
+    selD.setAttribute('data-tipo', tipo);
+  } else if (selD.innerHTML !== opciones){
+    selD.innerHTML = opciones; selD.value = previa;
+  }
+  var decision = selD.value || '';
+
+  /* textos por defecto: sólo se reemplazan si el alumno no los ha tocado */
+  var defs = sup.existe
+    ? [T.desc, T.verif, T.mot]
+    : [T.descSC || T.desc, T.verifSC || T.verif, T.motSC || T.mot];
+  if (tipo === 'funciones' && sup.existe && !hayReserva)
+    defs = [T.descNR || T.desc, T.verif, T.motNR || T.mot];
+  ['descripcion','verificacion','motivo'].forEach(function(id, i){
+    var el = $('#' + id);
+    if (el.value === '' || DEFAULTS[el.value]) el.value = defs[i];
+  });
+  /* el nombre por omisión sigue a la figura del régimen */
+  var placeholders = { 'Nombre del Oficial de Cumplimiento':1, 'Nombre del Representante':1 };
+  if (placeholders[$('#oficial').value]) $('#oficial').value = 'Nombre del ' + figura;
+
+  $('#veredicto').innerHTML = '<div class="veredicto ' + (sup.obligada ? 'con' : 'sin') + '">' +
+    '<span class="cifra">' + esc(sup.titulo) + '</span><p>' + esc(sup.nota) + '</p></div>';
+
+  /* datos capturados */
+  var entidad = ($('#entidad').value || '').trim() || 'la entidad';
+  var folio = ($('#folio').value || '').trim() || 'sin folio';
+  var lugar = ($('#lugar').value || '').trim() || 'Ciudad de México';
+  var oficial = ($('#oficial').value || '').trim() || ('Nombre del ' + figura);
+  var dg = ($('#dg').value || '').trim() || 'Nombre del Director General';
+  var fDict = leerFecha($('#fecha').value) || new Date();
+  var fAlerta = leerFecha($('#alerta').value);
+  var descripcion = ($('#descripcion').value || '').trim();
+  var verificacion = ($('#verificacion').value || '').trim();
+  var motivo = ($('#motivo').value || '').trim();
+  var hoy = new Date().toLocaleDateString('es-MX', { day:'numeric', month:'long', year:'numeric' });
+
+  var dispTxt = 'las Disposiciones de Carácter General en materia de prevención de operaciones con recursos de procedencia ilícita y financiamiento al terrorismo aplicables a ' + minus(s.nombre);
+  var dispHTML = esc(dispTxt) + '<span class="cita">' + esc(s.ley) + '</span>';
+
+  /* ── título del acta ── */
+  var titulo, sub;
+  if (tipo === 'inusual')      titulo = 'Acta de dictamen del ' + figura + '. Operación Inusual';
+  else if (tipo === 'interna') titulo = 'Acta de dictamen del ' + figura + '. Operación Interna Preocupante';
+  else if (tipo === 'supuesto') titulo = sup.existe
+      ? 'Constancia de ubicación en el supuesto de ausencia de Comité de Comunicación y Control'
+      : 'Constancia sobre la inexistencia de Comité de Comunicación y Control en el régimen aplicable';
+  else titulo = !sup.existe
+      ? 'Constancia sobre la inexistencia de funciones trasladables al ' + figura
+      : (hayReserva
+        ? 'Constancia de las funciones que no se trasladan al ' + figura
+        : 'Constancia sobre el traslado íntegro de funciones al ' + figura);
+  sub = s.nombre + ' · ' + s.ley;
+
+  /* ── cláusulas ── */
+  var cl = [], ord = ['Primero','Segundo','Tercero','Cuarto','Quinto','Sexto','Séptimo','Octavo','Noveno'];
+  function clausula(rubro, cuerpo){
+    cl.push('<section class="cl"><h4>' + esc(ord[cl.length]) + '. ' + esc(rubro) + '</h4>' + cuerpo + '</section>');
+  }
+
+  var proemio = 'En ' + esc(lugar) + ', a ' + esc(largo(fDict)) + ', el suscrito, en su carácter de ' +
+    esc(figura) + ' de ' + esc(entidad) + ', con fundamento en ' + dispHTML +
+    ', hace constar lo siguiente.';
+
+  /* Primero: régimen y personalidad */
+  clausula('Régimen aplicable y personalidad', '<p>' +
+    esc(entidad) + ' es una entidad sujeta a ' + dispHTML + '. El nombramiento del ' + esc(figura) +
+    ' corresponde, conforme a ese ordenamiento, a: ' + conCita(g.designa) + '. El suscrito ejerce ese cargo a la fecha de la presente acta.</p>');
+
+  /* Segundo: supuesto de ausencia de Comité */
+  var c2 = '';
+  if (!sup.existe){
+    c2 = '<p>El ordenamiento aplicable no contempla Comité de Comunicación y Control. En consecuencia, no existe supuesto de dispensa que acreditar ni funciones que trasladar: el dictamen corresponde al ' +
+      esc(figura) + ' desde el texto original de las Disposiciones, y el plazo de reporte se cuenta desde ese dictamen, según se precisa más adelante: ' +
+      conCita(de.desde_cuando) + '.</p>';
+  } else if (sup.obligada){
+    c2 = '<p>Conforme al ordenamiento aplicable, la entidad prescinde del Comité de Comunicación y Control cuando: ' +
+      conCita(g.umbral_sin_comite) + '. A la fecha de esta acta ' + esc(sup.hechos) +
+      ', de modo que la entidad <em>no</em> se ubica en ese supuesto y está obligada a integrar el Comité.</p>' +
+      '<div class="hueco"><b class="rot">Advertencia: el modelo no corresponde a esta entidad</b><p>' +
+      esc(sup.nota) + ' Con Comité integrado, el documento que la norma exige es el acta de la sesión del Comité que dictamine, no esta acta. Este modelo sirve únicamente para la entidad que se ubica en el supuesto de ausencia de Comité.</p></div>';
+  } else {
+    c2 = '<p>Conforme al ordenamiento aplicable, la entidad prescinde del Comité de Comunicación y Control cuando: ' +
+      conCita(g.umbral_sin_comite) + '. A la fecha de esta acta ' + esc(sup.hechos) +
+      ', por lo que la entidad se ubica en ese supuesto y no está obligada a contar con Comité de Comunicación y Control. En consecuencia, las funciones que las Disposiciones atribuyen a dicho órgano son ejercidas por el ' +
+      esc(figura) + ', y la presente acta sustituye al acta de la sesión del Comité para efectos de dejar constancia del dictamen y de su fecha.</p>';
+  }
+  clausula(sup.existe ? 'Supuesto de ausencia de Comité de Comunicación y Control'
+    : 'Inexistencia de Comité de Comunicación y Control en el régimen', c2);
+
+  if (tipo === 'inusual' || tipo === 'interna'){
+    var objeto = (tipo === 'inusual') ? 'la Operación analizada' : 'la conducta analizada';
+    var c3 = '<p>Se somete a dictamen ' + objeto + ', descrita en los términos siguientes:</p>' +
+      '<p class="lit"><em>' + esc(descripcion || 'Sin descripción capturada.') + '</em></p>';
+    if (fAlerta){
+      var lim = masNaturales(fAlerta, 60);
+      c3 += '<p>La alerta o detección se generó el ' + esc(largo(fAlerta)) +
+        '. El ordenamiento fija para dictaminar el plazo siguiente: ' + conCita(de.desde_cuando) +
+        '. Contados sesenta días naturales desde la fecha señalada, ese plazo concluye el ' + esc(largo(lim)) +
+        '; el cómputo es auxiliar y la entidad debe verificarlo contra el texto vigente.</p>';
+    }
+    clausula(tipo === 'inusual' ? 'Operación sometida a dictamen' : 'Conducta sometida a dictamen', c3);
+
+    clausula('Verificación practicada', '<p>Para dictaminar, la institución verificó lo siguiente:</p>' +
+      '<p class="lit"><em>' + esc(verificacion || 'Sin verificación capturada.') + '</em></p>');
+
+    clausula('Dictamen', '<p>Con base en lo anterior, el ' + esc(figura) + ' dictamina: <em>' +
+      esc(decision) + '</em>.</p><p>El dictamen se funda en lo siguiente:</p>' +
+      '<p class="lit"><em>' + esc(motivo || 'Sin fundamento capturado.') + '</em></p>' +
+      '<p>Este dictamen se emite el ' + esc(largo(fDict)) + ', fecha que ' +
+      (!sup.existe
+        ? 'hace correr el plazo de reporte, conforme al propio ordenamiento.'
+        : (sup.obligada
+          ? 'el suscrito hace constar; tratándose de una entidad obligada a contar con Comité, el plazo de reporte corre desde la conclusión de la sesión que dictamine la Operación.'
+          : 'sustituye a la de conclusión de la sesión del Comité para efectos del cómputo del plazo de reporte.')) + '</p>');
+
+    /* Plazo de reporte + el hueco */
+    var plazoTexto = (tipo === 'inusual') ? de.inusual_plazo : de.internas_preocupantes;
+    var c6 = '<p>El plazo que el ordenamiento fija para presentar el reporte es: ' + conCita(plazoTexto) + '.</p>';
+    if (tipo === 'inusual')
+      c6 += '<p>El punto de partida que el mismo precepto señala es: ' + conCita(de.desde_cuando) + '.</p>';
+    var lim3 = masHabiles(fDict, 3);
+    c6 += '<p>Contados tres días hábiles desde la fecha de este dictamen, el reporte debe presentarse a más tardar el ' +
+      esc(largo(lim3)) + '. El cómputo es auxiliar: sólo descuenta sábados y domingos y no considera los días inhábiles que determine la autoridad.</p>';
+
+    if (sup.existe){
+      c6 += '<div class="hueco"><b class="rot">Hueco de la norma: punto de partida del plazo</b>' +
+        '<p>El precepto citado hace correr los tres días hábiles desde la conclusión de la sesión del Comité que dictamine la Operación. En la entidad que se ubica en el supuesto de ausencia de Comité no hay sesión ni Comité, y el ordenamiento no adapta el punto de partida al dictamen del ' + esc(figura) + '. La norma no resuelve expresamente este punto.</p>' +
+        '<p>Por eso esta acta consigna la fecha en que el ' + esc(figura) + ' dictaminó: es el único acto documentado que puede hacer correr el plazo. El criterio debe quedar asentado en el manual de cumplimiento de la entidad y consultarse con la autoridad cuando el caso lo amerite.</p></div>';
+    } else {
+      var hz = hallazgo(/^Trece de los catorce/);
+      c6 += '<div class="hueco"><b class="rot">Punto de partida del plazo en este régimen</b>' +
+        '<p>Este ordenamiento es el único de los catorce que ya cuenta el plazo desde el dictamen y no desde la sesión de un Comité, de modo que aquí no se presenta el hueco que afecta a los demás regímenes: ' +
+        conCita(de.desde_cuando) + '.</p>' + (hz ? '<p>' + esc(hz) + '</p>' : '') + '</div>';
+    }
+    clausula('Plazo de presentación del reporte', c6);
+  }
+
+  if (tipo === 'supuesto'){
+    clausula(sup.existe ? 'Hechos que acreditan el supuesto' : 'Hechos que se hacen constar',
+      (sup.existe
+        ? '<p>A la fecha de esta constancia ' + esc(sup.hechos) + '. El umbral aplicable es: ' + conCita(g.umbral_sin_comite) + '.</p>'
+        : '<p>El ordenamiento no prevé Comité de Comunicación y Control, por lo que no hay umbral que acreditar: ' + conCita(g.umbral_sin_comite) + '.</p>') +
+      '<p class="lit"><em>' + esc(descripcion || 'Sin descripción capturada.') + '</em></p>' +
+      '<p>Para ' + (sup.existe ? 'acreditarlo' : 'constatarlo') + ', la institución verificó lo siguiente:</p>' +
+      '<p class="lit"><em>' + esc(verificacion || 'Sin verificación capturada.') + '</em></p>' +
+      (DATA.regla[clave].t === 'personas' || DATA.regla[clave].t === 'triple'
+        ? '<p>Donde el ordenamiento se refiere a las personas al servicio de la entidad, la cifra corresponde a las de la entidad —no a las del área de cumplimiento— e incluye a quienes realizan funciones para ella de manera indirecta, a través de empresas de servicios complementarios.</p>'
+        : ''));
+
+    var c4 = '<p>' + (sup.existe
+      ? 'Se hace constar la determinación siguiente: <em>' + esc(decision) + '</em>.'
+      : 'Se hace constar que el régimen aplicable no contempla Comité de Comunicación y Control, de modo que la entidad no requiere determinación alguna sobre su integración.') + '</p>' +
+      '<p class="lit"><em>' + esc(motivo || 'Sin fundamento capturado.') + '</em></p>';
+    if (sup.existe && !sup.obligada)
+      c4 += '<p>En consecuencia, las funciones que las Disposiciones atribuyen al Comité de Comunicación y Control son ejercidas por el ' +
+        esc(figura) + ', con la salvedad que se precisa en la cláusula siguiente.</p>';
+    clausula('Determinación', c4);
+
+    clausula(sup.existe ? 'Función que no se traslada' : 'Inexistencia de funciones trasladables',
+      (hayReserva
+        ? '<p>El ordenamiento reserva expresamente a otro cargo la función siguiente, que no se traslada al ' + esc(figura) + ': ' + conCita(fnt) + '.</p>'
+        : (vacio(fnt)
+          ? '<p>El ordenamiento no prevé Comité de Comunicación y Control, por lo que no existe función que trasladar ni que reservar: ' + conCita(fnt) + '.</p>'
+          : '<p>El ordenamiento no reserva función alguna: ' + conCita(fnt) + '.</p>')));
+
+    var c6b = '<p>El ordenamiento fija para el aviso de designación del ' + esc(figura) +
+      ' a la autoridad el plazo siguiente: ' + conCita(g.aviso_designacion) + '.</p>';
+    if (!sup.existe){
+      c6b += '<p>Al no prever este ordenamiento Comité de Comunicación y Control, no hay aviso de ubicarse en el supuesto de ausencia de Comité que rendir: el único aviso que el ordenamiento contempla en esta materia es el de la designación del ' +
+        esc(figura) + ', citado en el párrafo anterior.</p>';
+    } else {
+      c6b += '<div class="hueco"><b class="rot">Plazo del aviso de ubicarse en el supuesto</b>' +
+        '<p>El único plazo que el compilado registra en materia de aviso es el de la designación del ' + esc(figura) +
+        ', citado en el párrafo anterior. La entidad debe verificar en el texto vigente de su ordenamiento el plazo y el medio del aviso de ubicarse en el supuesto de ausencia de Comité, que no siempre está fijado de manera expresa.</p>';
+      var hSeg = hueco(/^Seguros: el aviso de ubicarse/);
+      if ((clave === 'SEGUROS' || clave === 'FINTECH') && hSeg)
+        c6b += '<p>Anotación del compilado, que compara ambos regímenes: ' + esc(hSeg) + '</p>';
+      var hUni = hueco(/^Uniones de Crédito: las tres condiciones/);
+      if (clave === 'UNIONES DE CRÉDITO' && hUni) c6b += '<p>' + esc(hUni) + '</p>';
+      var hExt = hueco(/^Datos que dependen de un ordenamiento externo/);
+      if ((clave === 'SOCAP' || clave === 'FONDOS') && hExt) c6b += '<p>' + esc(hExt) + '</p>';
+      var hFon = hueco(/^Fondos de Inversión: tensión entre la 38ª/);
+      if (clave === 'FONDOS' && hFon) c6b += '<p>' + esc(hFon) + '</p>';
+      c6b += '</div>';
+    }
+    clausula('Aviso a la autoridad', c6b);
+  }
+
+  if (tipo === 'funciones'){
+    clausula('Alcance del traslado de funciones',
+      '<p class="lit"><em>' + esc(descripcion || 'Sin descripción capturada.') + '</em></p>' +
+      '<p>Para constatarlo, la institución verificó lo siguiente:</p>' +
+      '<p class="lit"><em>' + esc(verificacion || 'Sin verificación capturada.') + '</em></p>');
+
+    var c4f;
+    if (hayReserva){
+      c4f = '<p>Se hace constar que la función siguiente <em>no</em> se traslada al ' + esc(figura) +
+        ' y permanece a cargo de quien el propio ordenamiento señala: ' + conCita(fnt) + '.</p>' +
+        '<p>Las demás funciones que las Disposiciones atribuyen al Comité de Comunicación y Control son ejercidas por el ' + esc(figura) + '.</p>';
+    } else if (vacio(fnt)){
+      c4f = '<p>Se hace constar que el ordenamiento aplicable no contempla Comité de Comunicación y Control, de modo que no existen funciones que trasladar ni funciones reservadas a otro cargo: ' +
+        conCita(fnt) + '.</p>';
+    } else {
+      c4f = '<p>Se hace constar que el ordenamiento aplicable no reserva función alguna: ' + conCita(fnt) + '.</p>';
+      var hFin = hueco(/^Fintech: al no exceptuarse/);
+      if (hFin) c4f += '<div class="hueco"><b class="rot">Consecuencia documentada de este régimen</b><p>' + esc(hFin) + '</p></div>';
+    }
+    c4f += '<p class="lit"><em>' + esc(motivo || 'Sin fundamento capturado.') + '</em></p>';
+    clausula(!sup.existe ? 'Inexistencia de función reservada'
+      : (hayReserva ? 'Función reservada' : 'Ausencia de función reservada'), c4f);
+  }
+
+  /* Resguardo, común a las cuatro actas */
+  var hAct = hueco(/^Plazo de conservación de las actas del Comité/);
+  clausula('Resguardo',
+    '<p>La presente acta y el soporte documental que la sustenta quedan bajo resguardo del ' + esc(figura) +
+    ', a disposición de la autoridad. El plazo de conservación que el ordenamiento fija para la información de las Operaciones es: ' +
+    conCita(an.conservacion) + '.</p>' +
+    (hAct ? '<div class="hueco"><b class="rot">Hueco de la norma: conservación del acta</b><p>' + esc(hAct) + '</p></div>' : ''));
+
+  /* firmas */
+  var firmas = '<div class="firmas"><div class="firma"><div class="linea"></div><b>' + esc(oficial) +
+    '</b>' + esc(figura) + ' de ' + esc(entidad) + '</div>';
+  if (hayReserva && (tipo === 'supuesto' || tipo === 'funciones'))
+    firmas += '<div class="firma"><div class="linea"></div><b>' + esc(dg) +
+      '</b>Director General o cargo equivalente<br>Enterado de la función que le queda reservada</div>';
+  firmas += '</div>';
+
+  /* advertencia de modelo, dentro del acta */
+  var advertencia = '<div class="hueco"><b class="rot">Advertencia sobre este documento</b>' +
+    '<p>Este es un modelo de trabajo del curso Oficial de Cumplimiento de 360Educa. La entidad debe adaptarlo a su manual de cumplimiento, a su ordenamiento y al texto vigente antes de utilizarlo, y verificar cada cita contra el Diario Oficial de la Federación. El compilado empleado para ' +
+    esc(minus(s.nombre)) + ' llega a ' + esc(s.compilado) + '.</p>' +
+    (sup.existe
+      ? '<p>El punto de partida del plazo de reporte cuando no hay Comité es un tema que la norma no resuelve expresamente: el precepto sigue refiriéndose a la sesión del Comité que dictamine. La fecha de dictamen que consigna esta acta es el criterio que aquí se documenta, no un criterio confirmado por la autoridad.</p>'
+      : '<p>En este régimen el plazo de reporte ya corre desde el dictamen del ' + esc(figura) + ', de modo que el punto de partida no presenta el problema que afecta a los otros trece ordenamientos.</p>') +
+    '<p>Material de capacitación. No constituye asesoría legal.</p></div>';
+
+  /* ── bloque de fundamento, con las citas del régimen ── */
+  var filas = [
+    renglon('Quién designa', g.designa),
+    renglon('Aviso de designación', g.aviso_designacion),
+    renglon('Supuesto sin Comité', g.umbral_sin_comite),
+    renglon('Función no trasladada', g.funcion_no_trasladada)
+  ];
+  if (tipo === 'inusual' || tipo === 'interna'){
+    filas.push(renglon('Inusuales · plazo', de.inusual_plazo));
+    filas.push(renglon('Desde cuándo cuenta', de.desde_cuando));
+    filas.push(renglon('Internas preocupantes', de.internas_preocupantes));
+    filas.push(renglon('Veinticuatro horas', de.veinticuatro_horas));
+  }
+  filas.push(renglon('Conservación', an.conservacion));
+
+  var tam = (r.t === 'nivel') ? 'Nivel de operación ' + ['','I','II','III','IV'][+$('#nivel').value]
+    : (r.t === 'sincomite') ? 'Régimen sin Comité de Comunicación y Control'
+    : (r.t === 'triple') ? ($('#personas').value + ' personas · ' + $('#socios').value + ' socios · ' + $('#udis').value + ' millones de UDIS')
+    : ($('#personas').value + ' personas al servicio de la entidad');
+
+  $('#ficha').innerHTML =
+    '<div class="membrete">' +
+      '<p class="marca">GMC360 · 360Educa · Curso Oficial de Cumplimiento</p>' +
+      '<h1>' + esc(titulo) + '</h1>' +
+      '<p class="sub">' + esc(sub) + '</p>' +
+      '<p class="datos"><span><b>Entidad:</b> ' + esc(entidad) + '</span>' +
+        '<span><b>Folio:</b> ' + esc(folio) + '</span>' +
+        '<span><b>Supuesto declarado:</b> ' + esc(tam) + '</span>' +
+        '<span><b>Emitida:</b> ' + esc(hoy) + '</span></p>' +
+    '</div>' +
+    '<div class="nota ojo no-papel"><strong>Modelo de trabajo, no formato oficial.</strong> ' +
+      (sup.existe
+        ? 'La norma no le dio formato al ' + esc(figura) + ' que dictamina sin Comité. Esta acta ocupa ese lugar: deja constancia de la fecha en que él dictaminó, que es la que hace correr el plazo. ' +
+          'El punto de partida de ese plazo cuando no hay Comité es un tema que la norma no resuelve expresamente, y así queda dicho dentro del acta.'
+        : 'Este ordenamiento no prevé Comité de Comunicación y Control: el ' + esc(figura) +
+          ' dictamina por sí mismo desde el texto original y el plazo ya corre desde su dictamen. Aquí no se presenta el hueco de cómputo que afecta a los otros trece regímenes, y el acta lo dice así.') +
+      '</div>' +
+    '<article class="acta">' +
+      '<p class="tit">' + esc(titulo) + '</p>' +
+      '<p class="subtit">' + esc(entidad) + '</p>' +
+      '<p class="folio">Folio ' + esc(folio) + ' · ' + esc(sub) + '</p>' +
+      '<section class="cl"><p>' + proemio + '</p></section>' +
+      cl.join('') +
+      advertencia +
+      firmas +
+    '</article>' +
+    bloque('Fundamento normativo del régimen elegido', filas) +
+    '<p class="cierre"><b>Cómo se armó esta acta.</b> Cada plazo, umbral y función citados salen del texto literal de ' +
+      esc(dispTxt) + ' (' + esc(s.ley) + '), con la disposición citada entre paréntesis y en la numeración ordinal del propio ordenamiento. El compilado utilizado llega a ' +
+      esc(s.compilado) + ': verifica en el Diario Oficial si hubo reformas posteriores. Una raya significa que ese régimen no contempla esa obligación, no que falte el dato. ' +
+      'Los cómputos de fechas son auxiliares: los días hábiles sólo descuentan sábados y domingos, sin los días inhábiles que determine la autoridad. ' +
+      (sup.existe
+        ? 'El punto de partida de los tres días hábiles cuando no hay Comité no está resuelto expresamente en la norma, que sigue refiriéndose a la sesión del Comité que dictamine; esta acta documenta la fecha del dictamen del ' + esc(figura) + ' como el acto que lo hace correr.'
+        : 'En este régimen el plazo corre desde el dictamen del ' + esc(figura) + ', según el propio ordenamiento.') +
+      '<br><b>Material de capacitación, no asesoría legal.</b> GMC360 · 360Educa · ' + esc(hoy) + '</p>';
+
+  try { localStorage.setItem('ocu_sector', clave); } catch (e) {}
+}
+
+/* ── arranque, en estado de trabajo ─────────────────────── */
+var sel = $('#sector');
+sel.innerHTML = DATA.sectores.map(function(x){
+  return '<option value="' + esc(x.clave) + '">' + esc(x.nombre) + '</option>'; }).join('');
+var inicial = 'SOFOM';
+try { var gg = localStorage.getItem('ocu_sector'); if (gg && DATA.regla[gg]) inicial = gg; } catch (e) {}
+sel.value = inicial;
+
+var hoyD = new Date();
+$('#fecha').value = iso(hoyD);
+$('#alerta').value = iso(masNaturales(hoyD, -21));
+
+$('#consola').addEventListener('input', pintar);
+$('#consola').addEventListener('change', pintar);
+$('#imprimir').addEventListener('click', function(){ try { window.print(); } catch (e) {} });
+
+$('#pie').innerHTML = 'Las citas salen del texto literal de las Disposiciones de Carácter General en materia de PLD/FT de cada régimen, en su numeración ordinal. ' +
+  '<strong>Trece de los catorce ordenamientos hacen correr los tres días hábiles desde la conclusión de la sesión del Comité</strong>, sin adaptar el punto de partida a la entidad que dictamina sin Comité: ese hueco queda asentado en cada acta que genera esta herramienta. ' +
+  'Los compilados de casas de cambio, seguros y fintech se detienen en 2019, 2020 y 2018. ' +
+  'Material de capacitación, no asesoría legal.';
+
+pintar();
+})();
+</script>
+</body>
+</html>

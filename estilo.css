@@ -1,0 +1,197 @@
+/* ─────────────────────────────────────────────────────────────
+   Herramientas del curso Oficial de Cumplimiento · OCU
+   GMC360 · 360Educa · ruta sector financiero
+   Paleta: verde GMC #64c27b · crema #faf5ec · coral de acción #ff8361
+   Tipografía: Space Grotesk (títulos) · Inter (texto)
+   Una sola hoja para las cinco herramientas y el índice.
+   ───────────────────────────────────────────────────────────── */
+
+:root{
+  --crema:#faf5ec; --papel:#ffffff; --tinta:#1b1b1e; --tinta-2:#4d4d4d; --tinta-3:#7c7a74;
+  --verde:#64c27b; --verde-hondo:#2f7a45; --verde-vela:#eef7f0;
+  --coral:#ff8361; --coral-hondo:#b4441f; --coral-vela:#fdeee9;
+  --linea:#e3ddd0; --linea-fuerte:#cfc7b6;
+  --fondo:var(--crema); --panel:var(--papel);
+  --sombra:0 1px 2px rgba(27,27,30,.05), 0 8px 24px -16px rgba(27,27,30,.25);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --crema:#2b2f31; --papel:#343a3c; --tinta:#f2efe8; --tinta-2:#c3bfb6; --tinta-3:#98948b;
+  --verde:#7ad294; --verde-hondo:#a8e5bb; --verde-vela:#2c3d33;
+  --coral:#ff9a7d; --coral-hondo:#ffb59d; --coral-vela:#40312c;
+  --linea:#454b4e; --linea-fuerte:#5b6265; --fondo:#24282a; --panel:#2f3436;
+  --sombra:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -16px rgba(0,0,0,.6);
+}}
+:root[data-theme="dark"]{
+  --crema:#2b2f31; --papel:#343a3c; --tinta:#f2efe8; --tinta-2:#c3bfb6; --tinta-3:#98948b;
+  --verde:#7ad294; --verde-hondo:#a8e5bb; --verde-vela:#2c3d33;
+  --coral:#ff9a7d; --coral-hondo:#ffb59d; --coral-vela:#40312c;
+  --linea:#454b4e; --linea-fuerte:#5b6265; --fondo:#24282a; --panel:#2f3436;
+  --sombra:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -16px rgba(0,0,0,.6);
+}
+
+*{box-sizing:border-box}
+/* El atributo hidden manda sobre cualquier display de este archivo.
+   Sin esto, .campo{display:flex} deja visibles los campos condicionales. */
+[hidden]{display:none !important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--fondo);color:var(--tinta);
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+img{max-width:100%}
+h1,h2,h3,.cifra{font-family:"Space Grotesk",Inter,system-ui,sans-serif;text-wrap:balance}
+.marco{max-width:1180px;margin:0 auto;padding:22px 20px 80px}
+.marco.angosto{max-width:860px}
+
+/* ── barra de regreso al aula (el alumno va en un marco de Thinkific) */
+.regreso{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  flex-wrap:wrap;font-size:12px;padding:0 0 12px;margin-bottom:16px;
+  border-bottom:1px solid var(--linea)}
+.regreso a{color:var(--verde-hondo);text-decoration:none;font-weight:600}
+.regreso a:hover{text-decoration:underline}
+.regreso span{color:var(--tinta-3);letter-spacing:.05em;text-transform:uppercase;font-size:11px}
+
+/* ── encabezado */
+.cabeza{display:flex;flex-wrap:wrap;align-items:flex-end;gap:14px 24px;
+  padding-bottom:16px;border-bottom:2px solid var(--verde);margin-bottom:24px}
+.cabeza h1{margin:0;font-size:28px;font-weight:700;letter-spacing:-.015em;line-height:1.14}
+.rotulo{font-size:11px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--verde-hondo);margin:0 0 4px}
+.cabeza p{margin:0;max-width:52ch;font-size:13.5px;color:var(--tinta-2);flex:1 1 300px}
+
+/* ── rejilla consola + resultado */
+.tablero{display:grid;grid-template-columns:300px minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:860px){.tablero{grid-template-columns:1fr}}
+.consola{background:var(--panel);border:1px solid var(--linea);border-radius:10px;
+  padding:19px 17px;box-shadow:var(--sombra);position:sticky;top:14px;
+  display:flex;flex-direction:column;gap:15px}
+@media (max-width:860px){.consola{position:static}}
+
+/* ── campos */
+.campo{display:flex;flex-direction:column;gap:6px}
+.campo>label{font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--tinta-3)}
+.campo>label .suave{text-transform:none;letter-spacing:0;font-weight:400}
+select,input[type=number],input[type=text],input[type=date],textarea{
+  font:inherit;font-size:14px;color:var(--tinta);background:var(--fondo);
+  border:1px solid var(--linea-fuerte);border-radius:7px;padding:9px 10px;width:100%}
+input[type=number],input[type=date]{font-variant-numeric:tabular-nums}
+textarea{min-height:80px;resize:vertical;line-height:1.5}
+select:focus-visible,input:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{
+  outline:2.5px solid var(--verde);outline-offset:2px}
+.pista{font-size:11.5px;color:var(--tinta-3);line-height:1.42;margin:0}
+.sep{height:1px;background:var(--linea);margin:2px 0}
+
+/* ── acción (coral: el único color de acción de la marca) */
+.accion{font:inherit;font-size:14px;font-weight:600;color:#fff;background:var(--coral);
+  border:none;border-radius:8px;padding:11px 14px;width:100%;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;line-height:1.3}
+.accion:hover{filter:brightness(.95)}
+.accion.calma{background:transparent;color:var(--verde-hondo);border:1px solid var(--linea-fuerte)}
+.accion.calma:hover{background:var(--verde-vela);filter:none}
+
+/* ── veredicto */
+.veredicto{border-radius:9px;padding:14px 15px;border:1px solid}
+.veredicto.sin{background:var(--coral-vela);border-color:var(--coral)}
+.veredicto.con{background:var(--verde-vela);border-color:var(--verde)}
+.veredicto .cifra{display:block;font-size:20px;font-weight:700;line-height:1.15;margin-bottom:5px}
+.veredicto.sin .cifra{color:var(--coral-hondo)} .veredicto.con .cifra{color:var(--verde-hondo)}
+.veredicto p{margin:0;font-size:12.5px;color:var(--tinta-2)}
+
+/* ── resultado */
+.ficha{display:flex;flex-direction:column;gap:17px;min-width:0}
+.banda{background:var(--panel);border:1px solid var(--linea);border-left:5px solid var(--verde);
+  border-radius:10px;padding:16px 19px;box-shadow:var(--sombra)}
+.banda h2{margin:0 0 3px;font-size:20px;font-weight:700;letter-spacing:-.01em}
+.banda .ley{font-size:13px;color:var(--tinta-2)}
+.banda .sello{display:inline-block;margin-top:9px;font-size:11px;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--tinta-3);border:1px solid var(--linea-fuerte);
+  border-radius:20px;padding:3px 10px}
+
+.bloque{background:var(--panel);border:1px solid var(--linea);border-radius:10px;overflow:hidden}
+.bloque>h3{margin:0;padding:11px 19px;font-size:12px;font-weight:700;letter-spacing:.11em;
+  text-transform:uppercase;color:#fff;background:var(--verde)}
+:root[data-theme="dark"] .bloque>h3{color:#1b2620}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .bloque>h3{color:#1b2620}}
+.reng{display:grid;grid-template-columns:172px minmax(0,1fr);gap:6px 20px;
+  padding:11px 19px;border-top:1px solid var(--linea);align-items:baseline}
+.bloque .reng:first-of-type{border-top:none}
+@media (max-width:560px){.reng{grid-template-columns:1fr;gap:2px}}
+.reng dt{font-size:12px;font-weight:600;letter-spacing:.03em;color:var(--tinta-3);text-transform:uppercase}
+.reng dd{margin:0;font-size:14px;font-variant-numeric:tabular-nums}
+.reng.nulo dd{color:var(--tinta-3)}
+dl{margin:0}
+.cita{display:inline-block;margin-left:5px;font-size:11px;font-weight:500;color:var(--verde-hondo);
+  background:var(--verde-vela);border-radius:4px;padding:1px 6px;white-space:nowrap;font-variant-numeric:normal}
+.reng.nulo .cita{color:var(--tinta-3);background:transparent;border:1px solid var(--linea)}
+
+/* ── lo que no aplica */
+.exento{background:var(--panel);border:1px dashed var(--linea-fuerte);border-radius:10px;padding:15px 19px}
+.exento h3{margin:0 0 4px;font-size:13px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--tinta-3)}
+.exento p.intro{margin:0 0 10px;font-size:12.5px;color:var(--tinta-2)}
+.exento ul{margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:7px}
+.exento li{font-size:12.5px;color:var(--tinta-2);background:var(--fondo);
+  border:1px solid var(--linea);border-radius:20px;padding:4px 12px}
+.exento li::before{content:"no ";color:var(--coral-hondo);font-weight:600}
+
+/* ── tablas */
+.tabla-envoltura{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th{background:var(--verde);color:#fff;text-align:left;font-weight:600;font-size:11.5px;
+  letter-spacing:.06em;text-transform:uppercase;padding:9px 12px}
+:root[data-theme="dark"] th{color:#1b2620}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) th{color:#1b2620}}
+td{padding:9px 12px;border-top:1px solid var(--linea);vertical-align:top}
+tbody tr:nth-child(even) td{background:var(--verde-vela)}
+
+/* ── pie y avisos */
+.pie{margin-top:28px;padding-top:14px;border-top:1px solid var(--linea);
+  font-size:11.5px;color:var(--tinta-3);max-width:80ch}
+.pie strong{color:var(--tinta-2);font-weight:600}
+.nota{background:var(--verde-vela);border:1px solid var(--verde);border-radius:9px;
+  padding:13px 15px;font-size:13px;color:var(--tinta-2);margin:0 0 20px}
+.nota.ojo{background:var(--coral-vela);border-color:var(--coral)}
+.nota strong{color:var(--tinta)}
+
+/* ── membrete: sólo existe en el papel */
+.membrete{display:none}
+.cierre{display:none}
+
+@media (prefers-reduced-motion:no-preference){
+  .ficha>*{animation:sube .28s ease both}
+  @keyframes sube{from{opacity:.35;transform:translateY(3px)}to{opacity:1;transform:none}}
+}
+
+/* ─────────────────────────────────────────────
+   IMPRESIÓN · lo que el alumno se lleva en PDF
+   ───────────────────────────────────────────── */
+@media print{
+  @page{size:letter portrait;margin:14mm 15mm 16mm}
+  :root{--fondo:#fff;--panel:#fff;--tinta:#1b1b1e;--tinta-2:#4d4d4d;--tinta-3:#6b6b6b;
+        --verde:#64c27b;--verde-hondo:#2f7a45;--verde-vela:#f2faf4;--crema:#faf5ec;
+        --coral-vela:#fdeee9;--coral-hondo:#b4441f;--linea:#d8d3c6;--linea-fuerte:#bdb6a6;--sombra:none}
+  body{background:#fff;font-size:10.4pt}
+  .marco{max-width:none;padding:0}
+  .cabeza,.consola,.regreso,.accion,.no-papel,.nota{display:none !important}
+  .tablero{display:block}
+  .ficha{gap:11px}
+  .membrete{display:block;border-bottom:2.5px solid var(--verde);padding-bottom:8px;margin-bottom:14px}
+  .membrete .marca{font-family:"Space Grotesk",sans-serif;font-size:8.6pt;font-weight:700;
+    letter-spacing:.14em;text-transform:uppercase;color:var(--verde-hondo);margin:0 0 3px}
+  .membrete h1{font-size:18.5pt;font-weight:700;margin:0 0 3px;letter-spacing:-.01em}
+  .membrete .sub{font-size:10pt;color:var(--tinta-2);margin:0}
+  .membrete .datos{margin:7px 0 0;font-size:8.4pt;color:var(--tinta-3);display:flex;flex-wrap:wrap;gap:4px 18px}
+  .membrete .datos b{color:var(--tinta-2);font-weight:600}
+  .banda,.bloque,.exento,.veredicto,tr{break-inside:avoid}
+  .banda{padding:11px 13px} .banda h2{font-size:14pt}
+  .bloque>h3{color:#fff !important;background:var(--verde) !important;padding:6px 13px;font-size:8.5pt;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .reng{padding:6px 13px;grid-template-columns:152px minmax(0,1fr)}
+  .reng dt{font-size:8pt} .reng dd{font-size:9.5pt}
+  .cita{background:transparent;border:1px solid var(--linea);padding:0 4px;font-size:8pt}
+  .veredicto,.exento li,th{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .veredicto{display:block;margin-bottom:11px} .veredicto .cifra{font-size:12.5pt}
+  table{font-size:8.6pt} th{font-size:7.4pt;padding:5px 8px} td{padding:5px 8px}
+  .cierre{display:block !important;margin-top:14px;padding-top:9px;border-top:1px solid var(--linea);
+    font-size:7.8pt;color:var(--tinta-3);line-height:1.45}
+  .cierre b{color:var(--tinta-2)}
+  .pie{display:none}
+}

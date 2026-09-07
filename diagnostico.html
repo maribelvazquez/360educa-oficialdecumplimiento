@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diagnóstico de régimen · Oficial de Cumplimiento · 360Educa</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+<div class="marco">
+
+    <nav class="regreso no-papel">
+    <a href="index.html">← Todas las herramientas</a>
+    <span>Herramienta 5.1 · Curso Oficial de Cumplimiento</span>
+  </nav>
+
+  <header class="cabeza">
+    <div>
+      <p class="rotulo">360Educa · Curso Oficial de Cumplimiento</p>
+      <h1>¿Qué régimen me aplica?</h1>
+    </div>
+    <p>Elige tu entidad y su tamaño. La herramienta arma tu ficha: si estás obligado a tener Comité, qué reportas, con qué plazo, y qué obligaciones de otros sectores <strong>no</strong> te tocan.</p>
+  </header>
+
+  <div class="tablero">
+    <form class="consola" id="consola" autocomplete="off">
+      <div class="campo">
+        <label for="sector">Tu entidad</label>
+        <select id="sector"></select>
+      </div>
+
+      <div class="campo" id="c-personas">
+        <label for="personas">Personas al servicio de la entidad</label>
+        <input type="number" id="personas" min="0" max="99999" step="1" value="18">
+        <p class="pista">Toda la entidad, no sólo el área de cumplimiento. La norma cuenta a quienes realizan funciones <b>para la entidad</b>, de manera directa o indirecta a través de empresas de servicios complementarios.</p>
+      </div>
+
+      <div class="campo" id="c-nivel" hidden>
+        <label for="nivel">Nivel de operación</label>
+        <select id="nivel">
+          <option value="1">Nivel I</option><option value="2">Nivel II</option>
+          <option value="3">Nivel III</option><option value="4">Nivel IV</option>
+        </select>
+        <p class="pista">En SOCAP el Comité no depende del número de personas de la entidad, sino de su nivel de operación.</p>
+      </div>
+
+      <div class="campo" id="c-socios" hidden>
+        <label for="socios">Socios de la entidad</label>
+        <input type="number" id="socios" min="0" max="9999999" step="1" value="380">
+      </div>
+      <div class="campo" id="c-udis" hidden>
+        <label for="udis">Activos totales de la entidad, en millones de UDIS</label>
+        <input type="number" id="udis" min="0" max="999999" step="1" value="60">
+        <p class="pista">Uniones de crédito es el único régimen con tres condiciones acumuladas.</p>
+      </div>
+
+      <div class="campo">
+        <label for="entidad">Nombre de tu entidad <span class="suave">(opcional)</span></label>
+        <input type="text" id="entidad" maxlength="80" placeholder="Aparece en tu ficha">
+      </div>
+
+      <div class="sep"></div>
+      <div id="veredicto"></div>
+      <button type="button" class="accion" id="imprimir">↓ Guardar mi ficha en PDF</button>
+      <p class="pista">Se abre el diálogo de impresión. Elige «Guardar como PDF» y te llevas tu ficha con tus datos.</p>
+    </form>
+
+    <main class="ficha" id="ficha"></main>
+  </div>
+
+  <p class="pie" id="pie"></p>
+</div>
+
+<script src="datos/regimenes.js"></script>
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function parte(v){
+  const t = String(v || '—').trim();
+  const m = t.match(/^([\s\S]*?)\s*\(([^()]*)\)\s*$/);
+  return m ? { txt: m[1], cita: m[2] } : { txt: t, cita: '' };
+}
+const vacio = v => !v || /^—/.test(String(v).trim());
+function renglon(rot, val){
+  const { txt, cita } = parte(val);
+  return `<div class="reng${vacio(val) ? ' nulo' : ''}"><dt>${esc(rot)}</dt>
+    <dd>${esc(txt)}${cita ? `<span class="cita">${esc(cita)}</span>` : ''}</dd></div>`;
+}
+const bloque = (t, f) => `<section class="bloque"><h3>${esc(t)}</h3><dl>${f.join('')}</dl></section>`;
+
+function dictamen(clave){
+  const r = DATA.regla[clave];
+  if (r.t === 'sincomite')
+    return { obligada:false, titulo:'Este régimen no prevé Comité',
+      nota:'No existe Comité de Comunicación y Control en el ordenamiento. La figura es el Representante y dictamina solo.' };
+  if (r.t === 'nivel'){
+    const n = +$('#nivel').value;
+    return n === 1
+      ? { obligada:false, titulo:'Sin obligación de Comité', nota:'Nivel I. Las funciones del Comité recaen en el Oficial de Cumplimiento.' }
+      : { obligada:true, titulo:'Comité obligatorio', nota:`Nivel ${['','I','II','III','IV'][n]}. Sólo el nivel I queda dispensado.` };
+  }
+  if (r.t === 'triple'){
+    const p = +$('#personas').value, s = +$('#socios').value, u = +$('#udis').value;
+    const falla = [];
+    if (!(p < r.n)) falla.push(`${p} personas`);
+    if (!(s < r.socios)) falla.push(`${s} socios`);
+    if (!(u < r.udis)) falla.push(`${u} millones de UDIS`);
+    return falla.length === 0
+      ? { obligada:false, titulo:'Sin obligación de Comité', nota:'La entidad cumple las tres condiciones. Las funciones del Comité recaen en el Oficial de Cumplimiento.' }
+      : { obligada:true, titulo:'Comité obligatorio', nota:`Las tres condiciones son acumulativas. La entidad se sale por: ${falla.join(' · ')}.` };
+  }
+  const p = +$('#personas').value;
+  return p < r.n
+    ? { obligada:false, titulo:'Sin obligación de Comité',
+        nota:`La entidad tiene menos de ${r.n} personas a su servicio. Las funciones del Comité recaen en el Oficial de Cumplimiento.` }
+    : { obligada:true, titulo:'Comité obligatorio',
+        nota:`La entidad tiene ${p} personas a su servicio. La dispensa aplica por debajo de ${r.n}.` };
+}
+
+function pintar(){
+  const clave = $('#sector').value;
+  const s = DATA.sectores.find(x => x.clave === clave);
+  const g = DATA.gobierno[clave], pr = DATA.periodicos[clave],
+        de = DATA.deteccion[clave], an = DATA.anual[clave], r = DATA.regla[clave];
+
+  $('#c-personas').hidden = r.t === 'nivel' || r.t === 'sincomite';
+  $('#c-nivel').hidden = r.t !== 'nivel';
+  $('#c-socios').hidden = r.t !== 'triple';
+  $('#c-udis').hidden = r.t !== 'triple';
+
+  const d = dictamen(clave);
+  $('#veredicto').innerHTML = `<div class="veredicto ${d.obligada ? 'con' : 'sin'}">
+    <span class="cifra">${esc(d.titulo)}</span><p>${esc(d.nota)}</p></div>`;
+
+  const posibles = [
+    ['Operaciones relevantes', pr.relevante_umbral],
+    ['Efectivo en dólares', pr.dolares_efectivo],
+    ['Transferencias internacionales', pr.transferencias_int],
+    ['Certificación del oficial', g.certificacion],
+    ['Auditoría anual', an.auditoria],
+    ['Comité de Comunicación y Control', r.t === 'sincomite' ? '—' : 'sí'],
+  ].filter(([, v]) => vacio(v)).map(([k]) => k);
+
+  const gob = [
+    renglon('Quién designa', g.designa),
+    renglon('Aviso de designación', g.aviso_designacion),
+    renglon('Certificación', g.certificacion),
+    renglon('Supuesto sin Comité', g.umbral_sin_comite),
+  ];
+  if (!d.obligada && !vacio(g.funcion_no_trasladada))
+    gob.push(renglon('Función que NO te toca', g.funcion_no_trasladada));
+
+  const entidad = ($('#entidad').value || '').trim();
+  const hoy = new Date().toLocaleDateString('es-MX', { day:'numeric', month:'long', year:'numeric' });
+  const tam = r.t === 'nivel'     ? 'Nivel ' + ['','I','II','III','IV'][+$('#nivel').value]
+            : r.t === 'sincomite' ? '—'
+            : r.t === 'triple'    ? `${$('#personas').value} personas al servicio de la entidad · ${$('#socios').value} socios · ${$('#udis').value} millones de UDIS`
+            : `${$('#personas').value} personas al servicio de la entidad`;
+
+  $('#ficha').innerHTML = `
+    <div class="membrete">
+      <p class="marca">GMC360 · 360Educa · Curso Oficial de Cumplimiento</p>
+      <h1>Ficha de régimen</h1>
+      <p class="sub">${esc(s.nombre)} · ${esc(s.ley)}</p>
+      <p class="datos">
+        ${entidad ? `<span><b>Entidad:</b> ${esc(entidad)}</span>` : ''}
+        <span><b>Tamaño declarado:</b> ${esc(tam)}</span>
+        <span><b>Emitida:</b> ${esc(hoy)}</span></p>
+    </div>
+    <div class="banda">
+      <h2>${esc(s.nombre)}</h2>
+      <div class="ley">${esc(s.ley)}</div>
+      <span class="sello">Compilado a ${esc(s.compilado)}</span>
+    </div>
+    ${bloque('Gobierno', gob)}
+    ${bloque('Reportes periódicos', [
+      renglon('Relevantes · umbral', pr.relevante_umbral),
+      renglon('Relevantes · plazo', pr.relevante_plazo),
+      renglon('Efectivo en dólares', pr.dolares_efectivo),
+      renglon('Transferencias int.', pr.transferencias_int),
+      renglon('Sólo en tu régimen', pr.otros),
+    ])}
+    ${bloque('Reportes de detección', [
+      renglon('Inusuales · plazo', de.inusual_plazo),
+      renglon('Desde cuándo cuenta', de.desde_cuando),
+      renglon('Veinticuatro horas', de.veinticuatro_horas),
+      renglon('Internas preocupantes', de.internas_preocupantes),
+    ])}
+    ${bloque('Ciclo anual', [
+      renglon('Capacitación', an.capacitacion),
+      renglon('Auditoría', an.auditoria),
+      renglon('Entrega de la auditoría', an.entrega_auditoria),
+      renglon('Conservación', an.conservacion),
+      renglon('Actualización del EBR', an.ebr_actualizacion),
+    ])}
+    ${posibles.length ? `<section class="exento"><h3>Lo que no te aplica</h3>
+      <p class="intro">Obligaciones que sí existen en otros regímenes del sector financiero y que tu ordenamiento no contempla.</p>
+      <ul>${posibles.map(x => `<li>${esc(x)}</li>`).join('')}</ul></section>` : ''}
+    <p class="cierre"><b>Cómo leer esta ficha.</b> Cada dato sale del texto literal de las Disposiciones de Carácter General en materia de PLD/FT aplicables a ${esc(s.nombre.toLowerCase())}, con la disposición citada entre paréntesis. El compilado utilizado llega a ${esc(s.compilado)}: verifica en el Diario Oficial si hubo reformas posteriores. Una raya significa que ese régimen no contempla esa obligación, no que falte el dato. Donde la norma dice «personas a su servicio» se refiere a las de la ENTIDAD, no a las del área de cumplimiento, e incluye a quienes realizan funciones para ella de manera indirecta a través de empresas de servicios complementarios. Ninguna de las Disposiciones cita artículo sancionador ni montos: eso vive en la ley de cada ordenamiento.<br><b>Material de capacitación, no asesoría legal.</b> GMC360 · 360Educa · ${esc(hoy)}</p>`;
+  try { localStorage.setItem('ocu_sector', clave); } catch (e) {}
+}
+
+const sel = $('#sector');
+sel.innerHTML = DATA.sectores.map(s => `<option value="${esc(s.clave)}">${esc(s.nombre)}</option>`).join('');
+let inicial = 'BANCOS';
+try { const g = localStorage.getItem('ocu_sector'); if (g && DATA.regla[g]) inicial = g; } catch (e) {}
+sel.value = inicial;
+$('#consola').addEventListener('input', pintar);
+$('#imprimir').addEventListener('click', () => { try { window.print(); } catch (e) {} });
+$('#pie').innerHTML = 'Cada dato sale del texto literal de las Disposiciones de Carácter General en materia de PLD/FT, con la disposición citada. ' +
+  '<strong>Los compilados de casas de cambio, seguros y fintech se detienen en 2019, 2020 y 2018</strong>, y así está marcado en cada ficha. ' +
+  'Ninguna de las catorce Disposiciones cita artículo sancionador: eso vive en cada ley y se incorpora aparte. Material de capacitación, no asesoría legal.';
+pintar();
+</script>
+</body>
+</html>
