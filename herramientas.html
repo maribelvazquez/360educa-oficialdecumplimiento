@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Índice de herramientas · Oficial de Cumplimiento · 360Educa</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="estilo.css">
+<style>
+.rejilla{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:16px}
+.h{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--linea);
+  border-top:4px solid var(--verde);border-radius:11px;padding:18px 19px 16px;
+  box-shadow:var(--sombra);text-decoration:none;color:inherit;transition:transform .15s ease,border-color .15s ease}
+.h:hover{transform:translateY(-2px);border-top-color:var(--coral)}
+.h .num{font-family:"Space Grotesk",sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;
+  color:var(--verde-hondo);margin:0 0 6px}
+.h h2{margin:0 0 7px;font-size:18px;font-weight:700;letter-spacing:-.01em;line-height:1.25}
+.h p{margin:0 0 12px;font-size:13.5px;color:var(--tinta-2);line-height:1.5;flex:1}
+.h .lleva{font-size:11.5px;color:var(--tinta-3);border-top:1px dashed var(--linea-fuerte);padding-top:9px}
+.h .lleva b{color:var(--verde-hondo);font-weight:600}
+.h.pendiente{border-top-color:var(--linea-fuerte);opacity:.72;cursor:default}
+.h.pendiente:hover{transform:none;border-top-color:var(--linea-fuerte)}
+.h.pendiente .num{color:var(--tinta-3)}
+.motor{display:inline-block;font-size:10px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;
+  border-radius:4px;padding:2px 7px;margin-left:7px;vertical-align:2px}
+.motor.reglas{color:var(--verde-hondo);background:var(--verde-vela)}
+.motor.ia{color:var(--coral-hondo);background:var(--coral-vela)}
+</style>
+</head>
+<body>
+<div class="marco">
+
+  <nav class="regreso">
+    <a href="index.html">← Volver al aula</a>
+    <span>Índice de herramientas</span>
+  </nav>
+
+  <header class="cabeza">
+    <div>
+      <p class="rotulo">360Educa · Curso Oficial de Cumplimiento · Sector financiero</p>
+      <h1>Índice de herramientas</h1>
+    </div>
+    <p>Todas juntas, para cuando ya llevaste el curso y sólo vienes por una. Si estás aprendiendo, entra por las sesiones del aula: ahí cada herramienta aparece cuando ya sabes para qué sirve.</p>
+  </header>
+
+  <p class="nota">Todo lo normativo sale del texto literal de las Disposiciones de Carácter General en materia de PLD/FT, con la disposición citada. Ninguna herramienta necesita conexión una vez cargada, y ninguna guarda lo que escribes fuera de tu navegador.</p>
+
+  <div class="rejilla">
+
+    <a class="h" href="diagnostico.html">
+      <p class="num">5.1</p>
+      <h2>¿Qué régimen me aplica?<span class="motor reglas">Reglas</span></h2>
+      <p>Eliges tu entidad y su tamaño. Sale tu ficha completa: si estás obligado a tener Comité, qué reportas, con qué plazo, y las obligaciones de otros sectores que a ti no te tocan.</p>
+      <p class="lleva"><b>Te llevas:</b> tu ficha de régimen</p>
+    </a>
+
+    <a class="h" href="calendario.html">
+      <p class="num">5.2</p>
+      <h2>El calendario del cargo<span class="motor reglas">Reglas</span></h2>
+      <p>Tu año de enero a diciembre con las fechas de tu régimen. Contesta la pregunta que te haces cada mes: qué me toca ahora.</p>
+      <p class="lleva"><b>Te llevas:</b> tu año en una hoja</p>
+    </a>
+
+    <a class="h" href="brechas.html">
+      <p class="num">5.3</p>
+      <h2>Dónde estás parado<span class="motor reglas">Reglas</span></h2>
+      <p>Diagnóstico en tres dimensiones: tu programa, tus conocimientos y tu posición en la entidad. Sale con calificación, brechas priorizadas y ruta de formación.</p>
+      <p class="lleva"><b>Te llevas:</b> tu diagnóstico y tu ruta</p>
+    </a>
+
+    <a class="h" href="actas.html">
+      <p class="num">5.4</p>
+      <h2>Actas de dictamen<span class="motor reglas">Reglas</span></h2>
+      <p>Cuando tu entidad no está obligada a tener Comité, las funciones del Comité son tuyas y la norma no te dio formato. Aquí está, con las citas de tu régimen.</p>
+      <p class="lleva"><b>Te llevas:</b> el acta lista para firma</p>
+    </a>
+
+    <a class="h" href="fuentes.html">
+      <p class="num">5.7</p>
+      <h2>Doce fuentes<span class="motor reglas">Reglas</span></h2>
+      <p>El directorio para no quedarte atrás: qué revisar, para qué sirve cada fuente y cada cuánto abrirla. Nadie se actualiza leyendo todo.</p>
+      <p class="lleva"><b>Te llevas:</b> el directorio para pegar junto al escritorio</p>
+    </a>
+
+    <a class="h" href="clasificador.html">
+      <p class="num">5.5</p>
+      <h2>¿Esto se reporta?<span class="motor ia">IA</span></h2>
+      <p>Describes lo que observaste y te propone una clasificación, las señales de alerta, cómo parametrizarlo en tu sistema y un borrador de narrativa — con el plazo de tu régimen.</p>
+      <p class="lleva"><b>Te llevas:</b> tu ejercicio de clasificación</p>
+    </a>
+
+    <div class="h pendiente">
+      <p class="num">5.6 · En preparación</p>
+      <h2>Simulador de visita<span class="motor ia">IA</span></h2>
+      <p>El sistema te pide evidencia como lo haría un supervisor y tú respondes con lo que tienes. Al final, tu acta de hallazgos y el plan de remediación.</p>
+      <p class="lleva">La siguiente que se construye</p>
+    </div>
+
+  </div>
+
+  <p class="pie"><strong>Cómo leer lo que devuelven.</strong> Una raya significa que tu régimen no contempla esa obligación, no que falte el dato. Los compilados de casas de cambio, seguros y fintech se detienen en 2019, 2020 y 2018, y así viene marcado en cada ficha. Ninguna de las catorce Disposiciones cita artículo sancionador ni montos: eso vive en la ley de cada ordenamiento.<br><br>
+  <strong>Material de capacitación, no asesoría legal.</strong> GMC360 · 360Educa</p>
+</div>
+</body>
+</html>

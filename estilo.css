@@ -195,3 +195,92 @@ tbody tr:nth-child(even) td{background:var(--verde-vela)}
   .cierre b{color:var(--tinta-2)}
   .pie{display:none}
 }
+
+/* ─────────────────────────────────────────────
+   AULA Y SESIONES
+   La teoría manda; la herramienta vive dentro de la sesión.
+   ───────────────────────────────────────────── */
+
+/* tarjetas de sesión en el aula */
+.sesiones{display:flex;flex-direction:column;gap:13px}
+.ses{display:grid;grid-template-columns:58px minmax(0,1fr);gap:0 18px;align-items:start;
+  background:var(--panel);border:1px solid var(--linea);border-left:4px solid var(--verde);
+  border-radius:11px;padding:17px 19px;box-shadow:var(--sombra);
+  text-decoration:none;color:inherit;transition:transform .15s ease,border-left-color .15s ease}
+.ses:hover{transform:translateX(2px);border-left-color:var(--coral)}
+.ses .n{font-family:"Space Grotesk",sans-serif;font-size:31px;font-weight:700;
+  line-height:1;color:var(--verde-hondo);font-variant-numeric:tabular-nums}
+.ses h2{margin:0 0 4px;font-size:19px;font-weight:700;letter-spacing:-.01em;line-height:1.25}
+.ses .sub{margin:0 0 9px;font-size:13.5px;color:var(--tinta-2);line-height:1.5}
+.ses .piezas{display:flex;flex-wrap:wrap;gap:6px;font-size:11.5px}
+.ses .piezas span{border:1px solid var(--linea-fuerte);border-radius:20px;padding:3px 10px;color:var(--tinta-3)}
+.ses .piezas .conh{border-color:var(--verde);color:var(--verde-hondo);background:var(--verde-vela)}
+.ses.pendiente{border-left-color:var(--linea-fuerte);opacity:.66;cursor:default}
+.ses.pendiente:hover{transform:none;border-left-color:var(--linea-fuerte)}
+.ses.pendiente .n{color:var(--tinta-3)}
+@media (max-width:520px){.ses{grid-template-columns:1fr;gap:8px}.ses .n{font-size:24px}}
+
+/* navegación entre sesiones */
+.saltos{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;
+  margin-top:34px;padding-top:16px;border-top:1px solid var(--linea);font-size:13px}
+.saltos a{color:var(--verde-hondo);text-decoration:none;font-weight:600}
+.saltos a:hover{text-decoration:underline}
+.saltos .apagado{color:var(--tinta-3)}
+.saltos .aula{border:1px solid var(--linea-fuerte);border-radius:20px;padding:6px 15px}
+
+/* el cuerpo de una sesión */
+.leccion{background:var(--panel);border:1px solid var(--linea);border-radius:11px;
+  padding:22px 26px;margin-bottom:16px;box-shadow:var(--sombra)}
+.leccion>.num{font-size:11px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--verde-hondo);margin:0 0 6px}
+.leccion h2{margin:0 0 14px;font-size:23px;font-weight:700;letter-spacing:-.015em;line-height:1.22}
+.leccion h3{margin:22px 0 8px;font-size:16.5px;font-weight:700;letter-spacing:-.005em;color:var(--tinta)}
+.leccion p{margin:0 0 12px;font-size:15px;line-height:1.68;max-width:70ch}
+.leccion p:last-child{margin-bottom:0}
+.leccion ul,.leccion ol{margin:0 0 13px;padding-left:21px;max-width:70ch}
+.leccion li{font-size:15px;line-height:1.6;margin-bottom:6px}
+.leccion b,.leccion strong{font-weight:600}
+.leccion em{font-style:normal;color:var(--verde-hondo);font-weight:600}
+@media (max-width:520px){.leccion{padding:18px 17px}.leccion h2{font-size:20px}.leccion p,.leccion li{font-size:14.5px}}
+
+/* la cita normativa dentro del texto */
+.precepto{border-left:3px solid var(--verde);background:var(--verde-vela);
+  border-radius:0 8px 8px 0;padding:12px 16px;margin:0 0 14px;max-width:70ch}
+.precepto p{margin:0;font-size:14px;line-height:1.6}
+.precepto .de{display:block;margin-top:7px;font-size:11.5px;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--verde-hondo);font-weight:600}
+
+/* la herramienta, embebida en su lección */
+.usa{background:var(--fondo);border:2px solid var(--verde);border-radius:11px;
+  padding:19px 21px;margin:18px 0 14px;max-width:70ch}
+.usa .rot{font-size:11px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--verde-hondo);margin:0 0 6px}
+.usa h3{margin:0 0 7px;font-size:19px;font-weight:700}
+.usa p{margin:0 0 14px;font-size:14px;color:var(--tinta-2)}
+.usa a{display:inline-flex;align-items:center;gap:8px;font-size:14.5px;font-weight:600;
+  color:#fff;background:var(--coral);border-radius:8px;padding:11px 18px;text-decoration:none}
+.usa a:hover{filter:brightness(.95)}
+
+/* descargables al cierre de la sesión */
+.bajar{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.arch{background:var(--panel);border:1px solid var(--linea);border-radius:10px;padding:15px 17px}
+.arch .tipo{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--verde-hondo);background:var(--verde-vela);border-radius:4px;padding:2px 8px;
+  display:inline-block;margin-bottom:8px}
+.arch h4{margin:0 0 5px;font-size:15px;font-weight:700;line-height:1.3}
+.arch p{margin:0;font-size:13px;color:var(--tinta-2);line-height:1.5}
+.arch.falta{border-style:dashed;opacity:.7}
+
+/* lo que todavía te falta a ti */
+.tuyo{background:var(--coral-vela);border:1px dashed var(--coral);border-radius:10px;
+  padding:15px 18px;margin:0 0 16px;max-width:74ch}
+.tuyo h4{margin:0 0 5px;font-size:12px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--coral-hondo)}
+.tuyo p{margin:0;font-size:13.5px;color:var(--tinta-2);line-height:1.55}
+
+@media print{
+  .ses,.usa,.saltos,.tuyo{break-inside:avoid}
+  .leccion{box-shadow:none;padding:0;border:none;margin-bottom:16px}
+  .leccion h2{font-size:14pt} .leccion h3{font-size:11pt} .leccion p,.leccion li{font-size:10pt}
+  .usa{display:none}
+}
