@@ -118,7 +118,9 @@ export default async (peticion) => {
   if (peticion.method === 'OPTIONS') return json(204, {}, origen);
   if (peticion.method !== 'POST') return json(405, { error: 'Sólo POST' }, origen);
 
-  const clave = process.env.ANTHROPIC_API_KEY;
+  // .trim() a propósito: un espacio o salto de línea pegado por accidente
+  // produce un 401 «invalid x-api-key» imposible de ver a simple vista.
+  const clave = (process.env.ANTHROPIC_API_KEY || "").trim();
   if (!clave) return json(501, { error: 'sin_configurar' }, origen);
 
   const codigo = process.env.CODIGO_CURSO;

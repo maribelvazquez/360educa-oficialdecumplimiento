@@ -9,9 +9,12 @@
 export default async (peticion) => {
   const url = new URL(peticion.url);
   const probar = url.searchParams.get('probar') === '1';
-  const clave = process.env.ANTHROPIC_API_KEY;
+  // .trim() a propósito: un espacio o salto de línea pegado por accidente
+  // produce un 401 «invalid x-api-key» imposible de ver a simple vista.
+  const clave = (process.env.ANTHROPIC_API_KEY || "").trim();
 
   const salida = {
+    version_desplegada: 'v1.3 · 2026-09-07 07:02 UTC',
     listo: Boolean(clave),
     llave_configurada: Boolean(clave),
     origenes_configurados: Boolean(process.env.ORIGENES_PERMITIDOS),
@@ -21,6 +24,18 @@ export default async (peticion) => {
     aviso_correo_configurado: Boolean(process.env.AVISO_CORREO),
     momento: new Date().toISOString(),
   };
+
+  // Huella de la llave para poder compararla SIN revelarla.
+  if (clave) {
+    const crudo = process.env.ANTHROPIC_API_KEY || '';
+    salida.llave = {
+      largo: clave.length,
+      empieza: clave.slice(0, 14),
+      termina: clave.slice(-6),
+      tenia_espacios: crudo !== crudo.trim(),
+      forma_correcta: /^sk-ant-/.test(clave),
+    };
+  }
 
   if (probar) {
     if (!clave) {
