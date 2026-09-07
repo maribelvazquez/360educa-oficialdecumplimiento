@@ -113,9 +113,40 @@ function topeMensual(tope) {
   return true;
 }
 
-export default async (peticion) => {
+export default async (peticion) => manejar(peticion);
+
+async function manejar(peticion) {
   const origen = peticion.headers.get('origin') || '';
-  if (peticion.method === 'OPTIONS') return json(204, {}, origen);
+  if (peticion.method === 'OPTIONS')
+    return json(200, { ok: true }, origen);   // 204 no admite cuerpo: usar 200
+
+  // Autoprueba desde la barra de direcciones: /api/analizar (sin POST).
+  // Corre exactamente el mismo camino que usa la herramienta, con un texto fijo,
+  // y devuelve lo que salga. Sirve para ver el error sin abrir la consola.
+  if (peticion.method === 'GET') {
+    const u = new URL(peticion.url);
+    if (u.searchParams.get('probar') !== '0') {
+      const falso = new Request(u.origin + '/api/analizar', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          texto: 'Un cliente recibió catorce depósitos en efectivo de entre siete y nueve mil pesos en once días, en cinco sucursales distintas. Su perfil declarado es de veinte mil pesos al mes.',
+          sector: 'Instituciones de crédito',
+        }),
+      });
+      const r = await manejar(falso);
+      const cuerpo = await r.clone().text();
+      return json(200, {
+        autoprueba: true,
+        estado_de_la_funcion: r.status,
+        respuesta: (() => { try { return JSON.parse(cuerpo); } catch { return cuerpo.slice(0, 600); } })(),
+        interpretacion: r.status === 200
+          ? 'La función responde bien. Si la herramienta sigue cayendo al respaldo, el problema está en el navegador.'
+          : 'Aquí está el error que hace caer la herramienta al motor local.',
+      }, origen);
+    }
+    return json(405, { error: 'Sólo POST' }, origen);
+  }
   if (peticion.method !== 'POST') return json(405, { error: 'Sólo POST' }, origen);
 
   // .trim() a propósito: un espacio o salto de línea pegado por accidente
@@ -191,6 +222,6 @@ export default async (peticion) => {
     }
   }
   return json(502, { error: 'sin_modelo_disponible' }, origen);
-};
+}
 
 export const config = { path: '/api/analizar' };
