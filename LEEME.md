@@ -2,7 +2,7 @@
 
 **Clave del producto: OCU · Ruta sector financiero · GMC360 / 360Educa**
 
-Cinco herramientas listas y dos en preparación. Sitio estático: no hay compilación,
+Seis herramientas listas y una en preparación. Sitio estático: no hay compilación,
 ni gestor de paquetes, ni proceso de build. Se sube tal cual.
 
 ---
@@ -75,11 +75,18 @@ Eso vive en la ley de cada ordenamiento y se incorpora aparte.
 
 ---
 
-## 4 · Las dos herramientas con inteligencia artificial
+## 4 · La herramienta con inteligencia artificial
 
-`netlify/functions/analizar.mjs` está escrita y probada, pero **inerte hasta que
-configures las variables de entorno**. Sin la llave responde 501 y la herramienta cae
-sola a su motor de reglas local, sin que el alumno lo note.
+`clasificador.html` (5.5) llama a `netlify/functions/analizar.mjs`. **Sin la llave la
+función responde 501 y la herramienta cae sola a un motor local por palabras clave**, se
+lo dice al alumno en pantalla, y sigue entregando su PDF. Nunca se queda en blanco.
+
+Un detalle de diseño que conviene conservar: **la inteligencia artificial NO propone
+plazos ni números de disposición.** Las instrucciones del sistema se lo prohíben
+expresamente, porque la obligación de reportar inusuales es la 37ª en bancos, la 29ª en
+SOFOM y la 31ª en asesores: un solo número serviría para uno de los catorce y mentiría
+para los otros trece. Los plazos y las citas los pone la página desde `datos/regimenes.js`
+según el sector elegido. Si alguna vez editas el prompt, no quites esa regla.
 
 **La llave nunca va en el repositorio.** Se pega directo de la Claude Console al campo de
 Netlify, y de ningún otro lado: si estuviera en un archivo de GitHub, cualquiera la vería.

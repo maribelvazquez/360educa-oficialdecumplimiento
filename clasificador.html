@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clasificador de operaciones · Oficial de Cumplimiento · 360Educa</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="estilo.css">
+<style>
+.dictamen{border-radius:10px;padding:17px 19px;border:1px solid;border-left-width:5px}
+.dictamen .tipo{font-size:11px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;margin:0 0 5px}
+.dictamen h2{margin:0 0 6px;font-size:21px;font-weight:700;letter-spacing:-.01em;line-height:1.2}
+.dictamen p{margin:0;font-size:13.5px;color:var(--tinta-2)}
+.d-no{background:var(--verde-vela);border-color:var(--verde)}
+.d-no .tipo,.d-no h2{color:var(--verde-hondo)}
+.d-inusual{background:var(--coral-vela);border-color:var(--coral)}
+.d-inusual .tipo,.d-inusual h2{color:var(--coral-hondo)}
+.pesos{display:flex;flex-direction:column;gap:9px;padding:14px 19px}
+.peso{display:grid;grid-template-columns:minmax(0,1fr) 78px;gap:12px;align-items:center}
+.peso span{font-size:13.5px;line-height:1.4}
+.medida{height:7px;background:var(--linea);border-radius:99px;overflow:hidden}
+.medida i{display:block;height:100%;background:var(--verde);border-radius:99px}
+.medida.alta i{background:var(--coral)}
+.narrativa{padding:15px 19px;font-size:14px;line-height:1.65;white-space:pre-wrap}
+.param{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0}
+.param>div{padding:12px 19px;border-top:1px solid var(--linea)}
+.param dt{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--tinta-3);margin-bottom:3px}
+.param dd{margin:0;font-size:14px}
+.motor-usado{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--tinta-3);
+  border:1px solid var(--linea-fuerte);border-radius:20px;padding:3px 10px;display:inline-block;margin-top:9px}
+.cargando{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--tinta-2);padding:22px 19px}
+.punto{width:9px;height:9px;border-radius:50%;background:var(--verde);animation:late 1.1s ease-in-out infinite}
+@keyframes late{0%,100%{opacity:.25;transform:scale(.8)}50%{opacity:1;transform:scale(1.15)}}
+@media (prefers-reduced-motion:reduce){.punto{animation:none;opacity:.7}}
+.ejemplos{display:flex;flex-wrap:wrap;gap:6px}
+.ejemplos button{font:inherit;font-size:12px;color:var(--verde-hondo);background:var(--verde-vela);
+  border:1px solid var(--verde);border-radius:20px;padding:4px 11px;cursor:pointer}
+.ejemplos button:hover{filter:brightness(.96)}
+.cuenta-car{font-size:11px;color:var(--tinta-3);text-align:right;font-variant-numeric:tabular-nums}
+.cuenta-car.mucho{color:var(--coral-hondo);font-weight:600}
+@media print{
+  .pesos,.narrativa,.param>div{break-inside:avoid}
+  .dictamen{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .dictamen h2{font-size:14pt} .narrativa{font-size:10pt;padding:9px 13px}
+  .peso span{font-size:9pt} .param>div{padding:7px 13px} .param dd{font-size:9.5pt}
+  .medida i{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .motor-usado{font-size:7.6pt}
+}
+</style>
+</head>
+<body>
+<div class="marco">
+
+  <nav class="regreso no-papel">
+    <a href="index.html">← Todas las herramientas</a>
+    <span>Herramienta 5.5 · Curso Oficial de Cumplimiento</span>
+  </nav>
+
+  <header class="cabeza">
+    <div>
+      <p class="rotulo">360Educa · Curso Oficial de Cumplimiento</p>
+      <h1>¿Esto se reporta?</h1>
+    </div>
+    <p>Describe lo que observaste, con tus palabras. La herramienta propone una clasificación, las señales de alerta que ve, cómo parametrizarlo en tu sistema de monitoreo, y un borrador de narrativa — con el plazo de <strong>tu</strong> régimen.</p>
+  </header>
+
+  <p class="nota ojo no-papel"><strong>Es un ejercicio de práctica, no un dictamen.</strong> Quien clasifica una operación es el Comité, o tú cuando tu entidad no está obligada a tenerlo. Esta herramienta te ayuda a ordenar el razonamiento y a redactar; no sustituye tu criterio ni el análisis del caso real. No escribas aquí datos que identifiquen a un cliente.</p>
+
+  <div class="tablero">
+    <form class="consola" id="consola" autocomplete="off">
+      <div class="campo">
+        <label for="sector">Tu entidad</label>
+        <select id="sector"></select>
+        <p class="pista">Los plazos y las citas del resultado salen de tu régimen.</p>
+      </div>
+
+      <div class="campo">
+        <label for="texto">Qué observaste</label>
+        <textarea id="texto" maxlength="4000" style="min-height:170px"
+          placeholder="Un cliente que abrió cuenta hace dos meses…"></textarea>
+        <p class="cuenta-car" id="cuenta">0 / 4000</p>
+      </div>
+
+      <div class="campo">
+        <label>O empieza de un ejemplo</label>
+        <div class="ejemplos" id="ejemplos"></div>
+      </div>
+
+      <div class="campo">
+        <label for="entidad">Nombre de tu entidad <span class="suave">(opcional)</span></label>
+        <input type="text" id="entidad" maxlength="80" placeholder="Aparece en tu ejercicio">
+      </div>
+
+      <div class="sep"></div>
+      <button type="button" class="accion" id="analizar">Analizar</button>
+      <button type="button" class="accion calma" id="imprimir" hidden>↓ Guardar en PDF</button>
+    </form>
+
+    <main class="ficha" id="ficha"></main>
+  </div>
+
+  <p class="pie">El análisis se genera con inteligencia artificial y puede equivocarse: contrástalo siempre contra el texto de tu ordenamiento. Los plazos y las citas que ves NO los propone la inteligencia artificial — los pone la herramienta a partir del régimen que elegiste, porque cambian de un ordenamiento a otro. Si el servicio no responde, la herramienta hace una lectura local por reglas y te lo dice. Nada de lo que escribes se guarda. <strong>Material de capacitación, no asesoría legal.</strong></p>
+</div>
+
+<script src="datos/regimenes.js"></script>
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const parte = v => {
+  const t = String(v || '—').trim();
+  const m = t.match(/^([\s\S]*?)\s*\(([^()]*)\)\s*$/);
+  return m ? { txt: m[1], cita: m[2] } : { txt: t, cita: '' };
+};
+const conCita = v => { const { txt, cita } = parte(v);
+  return esc(txt) + (cita ? `<span class="cita">${esc(cita)}</span>` : ''); };
+
+const EJEMPLOS = [
+  ['Depósitos fraccionados', 'Un cliente persona física con perfil transaccional declarado de veinte mil pesos mensuales recibió, en los últimos once días, catorce depósitos en efectivo de entre siete mil y nueve mil pesos, en cinco sucursales distintas de tres estados. Ninguno alcanza el umbral de operación relevante. Al preguntarle, dijo que son pagos de clientes de su negocio, pero su actividad declarada es empleado asalariado.'],
+  ['Empleado involucrado', 'Un ejecutivo de cuenta abrió seis contratos en dos semanas para personas que comparten el mismo domicilio y el mismo teléfono. Los seis expedientes están incompletos y en los seis él mismo firmó como quien verificó la identificación. Tres de esas cuentas recibieron transferencias del mismo origen a los pocos días de abiertas.'],
+  ['Coincidencia en lista', 'Al correr el proceso de listas de personas bloqueadas, un cliente activo desde hace cuatro años arrojó coincidencia por nombre y fecha de nacimiento con una designación publicada la semana pasada. El apellido materno no coincide. El cliente tiene operaciones programadas para mañana.'],
+  ['Prepago atípico', 'Un crédito a sesenta meses fue liquidado en su totalidad al mes cuatro, con una transferencia de un tercero que no aparece en el expediente ni tiene relación declarada con el acreditado. El acreditado no supo explicar el origen y pidió que no se registrara el nombre de quien pagó.'],
+];
+
+let ultimo = null;
+
+function pintarVacio(){
+  $('#ficha').innerHTML = `<section class="bloque"><h3>Cómo funciona</h3>
+    <div class="narrativa">Describe el comportamiento como se lo contarías a un colega: qué viste, en qué periodo, qué te llamó la atención y qué ya verificaste. Entre más concreto seas con montos, plazos y número de operaciones, más útil sale el análisis.
+
+No hace falta que redactes bonito. Escribe como hablas.</div></section>`;
+}
+
+function pintarCargando(){
+  $('#ficha').innerHTML = `<section class="bloque"><h3>Analizando</h3>
+    <div class="cargando"><span class="punto"></span>Leyendo lo que escribiste y contrastándolo con las tipologías del sector…</div></section>`;
+}
+
+// ── Motor local de respaldo. No es la inteligencia artificial: es una lectura
+//    por palabras clave, para que la herramienta nunca deje al alumno en blanco.
+function motorLocal(texto){
+  const t = texto.toLowerCase();
+  const tiene = (...ws) => ws.some(w => t.includes(w));
+  const senales = [];
+  const add = (c, txt, peso) => { if (c) senales.push({ texto: txt, peso }); };
+
+  // Ojo: "empleado" a secas NO basta. La ocupación declarada de un CLIENTE
+  // ("es empleado asalariado") no hace interna la operación. Tiene que ser
+  // alguien DE la entidad.
+  const interna = tiene('ejecutivo de cuenta','funcionario de la','directivo de la','apoderado de la',
+    'personal de la instituci','personal de la entidad','empleado de la','colaborador de la',
+    'un ejecutivo','el ejecutivo','nuestro personal','de nuestra sucursal','del área de',
+    'operación interna','operacion interna');
+  const lista   = tiene('lista','bloquead','designaci','coincidencia','ofac','sancion');
+  const urgente = lista || tiene('terror','financiamiento al terrorismo');
+
+  add(tiene('fraccion','dividid','por debajo del umbral','no alcanza el umbral','structuring'), 'Operaciones fraccionadas que evitan el umbral de reporte', 5);
+  add(tiene('efectivo'), 'Uso de efectivo por encima de lo habitual en el perfil', 4);
+  add(tiene('perfil','declarad','no corresponde','no coincide','inconsistente'), 'Operación fuera del perfil transaccional declarado', 5);
+  add(tiene('sucursal','plaza','estados','geolocaliz','distintas ciudades'), 'Dispersión geográfica sin explicación por la actividad', 3);
+  add(tiene('tercero','no relacionad','no aparece en el expediente','del mismo origen'), 'Intervención de un tercero sin relación documentada', 4);
+  add(tiene('incomplet','falta document','sin identificaci','no verific','firmó como','firmo como'), 'Expediente incompleto o identificación no verificada por un tercero independiente', 4);
+  add(tiene('mismo domicilio','mismo teléfono','mismo telefono','comparten','mismo origen','en dos semanas','en pocos días','en pocos dias'), 'Datos o patrones compartidos entre clientes sin vínculo declarado', 4);
+  add(tiene('se negó','no supo explicar','pidió que no','evasiv','se rehus'), 'Resistencia del cliente a documentar el origen de los recursos', 5);
+  add(tiene('prepag','liquidó','liquido anticipad','pago anticipado'), 'Pago anticipado atípico respecto del plazo contratado', 3);
+  add(lista, 'Coincidencia con lista de personas bloqueadas', 5);
+  if (!senales.length) senales.push({ texto: 'No se identificaron señales por palabras clave; requiere análisis manual', peso: 1 });
+
+  const fuerza = senales.reduce((a, s) => a + s.peso, 0);
+  let clasificacion, plazo;
+  if (urgente)          clasificacion = 'Operación inusual con elementos de preocupante';
+  else if (interna)     clasificacion = 'Operación interna preocupante';
+  else if (fuerza >= 8) clasificacion = 'Operación inusual';
+  else                  clasificacion = 'No reportable · seguimiento documentado';
+
+  return {
+    clasificacion,
+    plazo: urgente ? 'Podría corresponder el reporte urgente. Revisa el plazo de tu régimen abajo.'
+                   : 'Revisa el plazo aplicable de tu régimen abajo.',
+    tipologias: [],
+    senales,
+    parametro: null,
+    narrativa: 'El servicio de análisis no respondió, así que ésta es una lectura local por palabras clave y no sustituye al análisis completo. Toma las señales de abajo como punto de partida y redacta tú la narrativa.',
+    _local: true,
+  };
+}
+
+function pintar(a, clave, texto){
+  const s = DATA.sectores.find(x => x.clave === clave);
+  const de = DATA.deteccion[clave], an = DATA.anual[clave];
+  const c = String(a.clasificacion || '');
+  const esInusual = /inusual|preocupante/i.test(c);
+  const urgente = /preocupante|24|veinticuatro/i.test(c + ' ' + (a.plazo || ''));
+
+  // El plazo NO lo propone la IA: lo pone la herramienta desde el régimen elegido.
+  const plazos = [];
+  if (/interna preocupante/i.test(c))
+    plazos.push(['Internas preocupantes', de.internas_preocupantes]);
+  else if (esInusual) {
+    plazos.push(['Operaciones inusuales', de.inusual_plazo]);
+    plazos.push(['Desde cuándo cuenta', de.desde_cuando]);
+    if (urgente) plazos.push(['Si procede el urgente', de.veinticuatro_horas]);
+  }
+  plazos.push(['Conservación del expediente', an.conservacion]);
+
+  const entidad = ($('#entidad').value || '').trim();
+  const hoy = new Date().toLocaleDateString('es-MX', { day:'numeric', month:'long', year:'numeric' });
+  const senales = Array.isArray(a.senales) ? a.senales : [];
+  const tipos = Array.isArray(a.tipologias) ? a.tipologias : [];
+
+  const barras = (arr, max) => arr.map(x => {
+    const p = Math.max(1, Math.min(max, Number(x.peso) || 1));
+    const pct = Math.round(p / max * 100);
+    return `<div class="peso"><span>${esc(x.texto || x.nombre)}</span>
+      <span class="medida${pct >= 70 ? ' alta' : ''}"><i style="width:${pct}%"></i></span></div>`;
+  }).join('');
+
+  $('#ficha').innerHTML = `
+    <div class="membrete">
+      <p class="marca">GMC360 · 360Educa · Curso Oficial de Cumplimiento</p>
+      <h1>Ejercicio de clasificación</h1>
+      <p class="sub">${esc(s.nombre)} · ${esc(s.ley)}</p>
+      <p class="datos">
+        ${entidad ? `<span><b>Entidad:</b> ${esc(entidad)}</span>` : ''}
+        <span><b>Fecha:</b> ${esc(hoy)}</span></p>
+    </div>
+
+    <div class="dictamen ${esInusual ? 'd-inusual' : 'd-no'}">
+      <p class="tipo">Clasificación propuesta</p>
+      <h2>${esc(c || 'Sin clasificación')}</h2>
+      ${a.plazo ? `<p>${esc(a.plazo)}</p>` : ''}
+      <span class="motor-usado">${a._local ? 'Lectura local por reglas' : 'Análisis con inteligencia artificial'}</span>
+    </div>
+
+    <section class="bloque"><h3>Lo que describiste</h3>
+      <div class="narrativa">${esc(texto)}</div></section>
+
+    ${senales.length ? `<section class="bloque"><h3>Señales de alerta observables</h3>
+      <div class="pesos">${barras(senales, 5)}</div></section>` : ''}
+
+    ${tipos.length ? `<section class="bloque"><h3>Tipologías que se parecen</h3>
+      <div class="pesos">${barras(tipos, 10)}</div></section>` : ''}
+
+    <section class="bloque"><h3>Plazos de tu régimen</h3><dl>
+      ${plazos.map(([k, v]) => `<div class="reng"><dt>${esc(k)}</dt><dd>${conCita(v)}</dd></div>`).join('')}
+    </dl></section>
+
+    ${a.parametro && a.parametro.variable ? `<section class="bloque">
+      <h3>Cómo lo parametrizarías en tu sistema</h3>
+      <div class="param">
+        <div><dt>Variable</dt><dd>${esc(a.parametro.variable)}</dd></div>
+        <div><dt>Umbral</dt><dd>${esc(a.parametro.umbral || '—')}</dd></div>
+        <div><dt>Ventana</dt><dd>${esc(a.parametro.ventana || '—')}</dd></div>
+      </div></section>` : ''}
+
+    ${a.narrativa ? `<section class="bloque"><h3>Borrador de narrativa</h3>
+      <div class="narrativa">${esc(a.narrativa)}</div></section>` : ''}
+
+    <p class="cierre"><b>Cómo leer este ejercicio.</b> La clasificación, las señales y la narrativa son una propuesta generada con inteligencia artificial a partir de lo que se describió: pueden equivocarse y no sustituyen el análisis del caso ni la decisión del Comité o del Oficial de Cumplimiento. Los plazos y las citas entre paréntesis NO los propuso la inteligencia artificial: los tomó la herramienta del texto literal de las Disposiciones aplicables a ${esc(s.nombre.toLowerCase())}, compiladas a ${esc(s.compilado)}. Verifica en el Diario Oficial si hubo reformas posteriores.<br><b>Material de capacitación, no asesoría legal.</b> GMC360 · 360Educa · ${esc(hoy)}</p>`;
+
+  $('#imprimir').hidden = false;
+  ultimo = a;
+}
+
+async function analizar(){
+  const texto = $('#texto').value.trim();
+  const clave = $('#sector').value;
+  if (texto.length < 20){
+    $('#ficha').innerHTML = `<section class="bloque"><h3>Falta la descripción</h3>
+      <div class="narrativa">Escribe al menos un par de renglones sobre lo que observaste. Con una frase suelta no sale nada útil.</div></section>`;
+    return;
+  }
+  $('#analizar').disabled = true;
+  pintarCargando();
+  const s = DATA.sectores.find(x => x.clave === clave);
+  let analisis;
+  try {
+    const r = await fetch('/api/analizar', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ texto, sector: s ? s.nombre : clave }),
+    });
+    if (!r.ok) throw new Error('estado ' + r.status);
+    analisis = await r.json();
+    if (!analisis || !analisis.clasificacion) throw new Error('respuesta incompleta');
+  } catch (e) {
+    analisis = motorLocal(texto);
+  }
+  pintar(analisis, clave, texto);
+  $('#analizar').disabled = false;
+}
+
+// arranque
+const sel = $('#sector');
+sel.innerHTML = DATA.sectores.map(s => `<option value="${esc(s.clave)}">${esc(s.nombre)}</option>`).join('');
+let inicial = 'BANCOS';
+try { const g = localStorage.getItem('ocu_sector'); if (g && DATA.regla[g]) inicial = g; } catch (e) {}
+sel.value = inicial;
+sel.addEventListener('change', () => { try { localStorage.setItem('ocu_sector', sel.value); } catch (e) {} });
+
+$('#ejemplos').innerHTML = EJEMPLOS.map((e, i) =>
+  `<button type="button" data-i="${i}">${esc(e[0])}</button>`).join('');
+$('#ejemplos').addEventListener('click', ev => {
+  const b = ev.target.closest('button'); if (!b) return;
+  $('#texto').value = EJEMPLOS[+b.dataset.i][1];
+  $('#texto').dispatchEvent(new Event('input'));
+  $('#texto').focus();
+});
+$('#texto').addEventListener('input', e => {
+  const n = e.target.value.length;
+  const c = $('#cuenta');
+  c.textContent = `${n} / 4000`;
+  c.classList.toggle('mucho', n > 3700);
+});
+$('#analizar').addEventListener('click', analizar);
+$('#imprimir').addEventListener('click', () => { try { window.print(); } catch (e) {} });
+pintarVacio();
+</script>
+</body>
+</html>
