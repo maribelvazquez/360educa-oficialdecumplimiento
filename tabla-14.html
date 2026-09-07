@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Los catorce regímenes lado a lado · Oficial de Cumplimiento · 360Educa</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="estilo.css">
+<style>
+  /* Esta hoja es ancha: en papel va acostada. */
+  @media print{
+    @page{size:letter landscape;margin:11mm 12mm 13mm}
+    .grupo{break-inside:auto}
+    .grupo h2{break-after:avoid}
+    table{font-size:7.4pt;table-layout:fixed;width:100%}
+    th{font-size:6.6pt;padding:4px 6px} td{padding:4px 6px}
+    td,th{overflow-wrap:anywhere;word-break:normal}
+    td.sec{white-space:normal;width:82px}
+    td.sec small{max-width:none;font-size:6.6pt}
+    .tabla-envoltura{overflow:visible}
+    .cita{white-space:normal;overflow-wrap:anywhere;display:inline;margin-left:3px}
+  }
+  .grupo{margin:0 0 26px}
+  .grupo h2{margin:0 0 4px;font-size:13px;font-weight:700;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--verde-hondo)}
+  .grupo .que{margin:0 0 11px;font-size:13px;color:var(--tinta-2);max-width:78ch}
+  td.sec{font-weight:600;white-space:nowrap}
+  td.sec small{display:block;font-weight:400;font-size:11px;color:var(--tinta-3);
+    white-space:normal;max-width:22ch;line-height:1.35}
+  tr.mio td{background:var(--coral-vela) !important;box-shadow:inset 3px 0 0 var(--coral)}
+  td.nada{color:var(--tinta-3)}
+  .barra{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;
+    background:var(--panel);border:1px solid var(--linea);border-radius:10px;
+    padding:14px 16px;margin:0 0 22px}
+  .barra .campo{flex:1 1 260px}
+  @media print{ .barra{display:none !important} }
+</style>
+</head>
+<body>
+<div class="marco">
+
+  <nav class="regreso no-papel">
+    <a href="sesion-1.html">← Volver a la sesión 1</a>
+    <span>Descargable · Sesión 1 · Curso Oficial de Cumplimiento</span>
+  </nav>
+
+  <header class="cabeza">
+    <div>
+      <p class="rotulo">360Educa · Curso Oficial de Cumplimiento</p>
+      <h1>Los catorce regímenes, lado a lado</h1>
+    </div>
+    <p>La misma obligación, vista en los catorce sectores del sistema financiero. Sirve para dos cosas: ver qué cambia cuando cambias de sector, y ver qué obligaciones existen en otros regímenes y en el tuyo no. Cada celda trae entre paréntesis la disposición de la que sale.</p>
+  </header>
+
+  <div class="barra no-papel">
+    <div class="campo">
+      <label for="mio">Resalta tu régimen <span class="suave">(opcional, sale marcado también en el PDF)</span></label>
+      <select id="mio"><option value="">Ninguno</option></select>
+    </div>
+    <button type="button" class="accion" id="imprimir">↓ Guardar la tabla en PDF</button>
+  </div>
+
+  <p class="nota no-papel"><strong>Cómo se lee.</strong> Una celda que empieza con “—” significa que ese régimen <b>no contempla</b> esa obligación: no es que falte el dato, es que la norma no la exige ahí. Y una obligación que no aparece en tu columna no es una obligación que puedas ignorar sin revisarlo: revisa siempre el texto vigente de tus Disposiciones.</p>
+
+  <div class="membrete">
+    <p class="marca">GMC360 · 360Educa · Curso Oficial de Cumplimiento</p>
+    <h1>Los catorce regímenes, lado a lado</h1>
+    <p class="sub">Tabla comparativa de obligaciones de PLD/FT en el sector financiero mexicano</p>
+    <p class="datos"><span id="m-mio"></span><span><b>Emitida:</b> <span id="m-fecha"></span></span></p>
+  </div>
+
+  <div id="tablas"></div>
+
+  <p class="cierre"><b>De dónde sale esta tabla.</b> Cada celda proviene del texto de las Disposiciones de Carácter General en materia de PLD/FT de cada régimen, con la disposición citada entre paréntesis. Los textos utilizados son compilados no oficiales, cuya fecha de compilación se indica en la biblioteca del curso. Antes de aplicar cualquier plazo a un caso real, verifica el texto vigente publicado en el Diario Oficial de la Federación.<br><b>Material de capacitación, no asesoría legal.</b> GMC360 · 360Educa</p>
+
+  <p class="pie no-papel"><strong>Material de capacitación, no asesoría legal.</strong> Los datos salen del texto de las Disposiciones vigentes de cada régimen, con su cita. GMC360 · 360Educa</p>
+</div>
+
+<script src="datos/regimenes.js"></script>
+<script>
+(function(){
+  var $ = function(q){ return document.querySelector(q); };
+  var esc = function(t){ return String(t==null?'':t)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
+
+  /* separa la cita final entre paréntesis para pintarla aparte */
+  function celda(txt){
+    if(txt == null || txt === '') return '<td class="nada">—</td>';
+    var t = String(txt).trim();
+    var vacia = t.charAt(0) === '—';
+    var m = t.match(/^(.*?)\s*\(([^()]*)\)\s*$/);
+    var cuerpo, cita = '';
+    if(m){ cuerpo = m[1]; cita = m[2]; } else { cuerpo = t; }
+    return '<td class="' + (vacia ? 'nada' : '') + '">' + esc(cuerpo) +
+      (cita ? ' <span class="cita">' + esc(cita) + '</span>' : '') + '</td>';
+  }
+
+  var GRUPOS = [
+    { titulo:'Gobierno del cargo',
+      que:'Quién te designa, en cuánto tiempo se avisa a la autoridad, si te exigen certificación, y desde qué tamaño la entidad puede quedarse sin Comité.',
+      fuente:'gobierno',
+      cols:[['designa','Quién designa'],['aviso_designacion','Aviso de designación'],
+            ['certificacion','Certificación'],['umbral_sin_comite','Umbral para no tener Comité'],
+            ['funcion_no_trasladada','Si no hay Comité']] },
+    { titulo:'Reportes periódicos',
+      que:'Los que se presentan por calendario, haya o no algo sospechoso. Cambian el umbral y cambia el plazo.',
+      fuente:'periodicos',
+      cols:[['relevante_umbral','Relevantes · umbral'],['relevante_plazo','Relevantes · plazo'],
+            ['dolares_efectivo','Efectivo en dólares'],['transferencias_int','Transferencias internacionales'],
+            ['otros','Sólo en este régimen']] },
+    { titulo:'Reportes de detección',
+      que:'Los que dispara un hecho. Aquí el dato crítico no es el plazo: es desde cuándo empieza a correr.',
+      fuente:'deteccion',
+      cols:[['inusual_plazo','Inusuales · plazo'],['desde_cuando','Desde cuándo cuenta'],
+            ['veinticuatro_horas','Veinticuatro horas'],['internas_preocupantes','Internas preocupantes']] },
+    { titulo:'Ciclo anual',
+      que:'Lo que se repite cada año y suele ser lo primero que se pide en una visita.',
+      fuente:'anual',
+      cols:[['capacitacion','Capacitación'],['auditoria','Auditoría'],
+            ['entrega_auditoria','Entrega de la auditoría'],['conservacion','Conservación'],
+            ['ebr_actualizacion','Actualización de la EBR']] }
+  ];
+
+  function pinta(){
+    var out = '';
+    GRUPOS.forEach(function(g){
+      var enc = '<tr><th>Régimen</th>' + g.cols.map(function(c){
+        return '<th>' + esc(c[1]) + '</th>'; }).join('') + '</tr>';
+      var filas = DATA.sectores.map(function(s){
+        var f = (DATA[g.fuente] || {})[s.clave] || {};
+        return '<tr data-clave="' + esc(s.clave) + '"><td class="sec">' + esc(s.clave) +
+          '<small>' + esc(s.nombre) + '</small></td>' +
+          g.cols.map(function(c){ return celda(f[c[0]]); }).join('') + '</tr>';
+      }).join('');
+      out += '<section class="grupo"><h2>' + esc(g.titulo) + '</h2>' +
+             '<p class="que">' + esc(g.que) + '</p>' +
+             '<div class="tabla-envoltura"><table><thead>' + enc +
+             '</thead><tbody>' + filas + '</tbody></table></div></section>';
+    });
+    $('#tablas').innerHTML = out;
+  }
+
+  function marca(clave){
+    var filas = document.querySelectorAll('#tablas tbody tr');
+    for(var i=0;i<filas.length;i++){
+      filas[i].classList.toggle('mio', !!clave && filas[i].getAttribute('data-clave') === clave);
+    }
+    $('#m-mio').innerHTML = clave ? '<b>Régimen resaltado:</b> ' + esc(clave) : '';
+  }
+
+  try{
+    var sel = $('#mio');
+    DATA.sectores.forEach(function(s){
+      var o = document.createElement('option');
+      o.value = s.clave; o.textContent = s.clave + ' · ' + s.nombre;
+      sel.appendChild(o);
+    });
+    pinta();
+    sel.addEventListener('change', function(){ marca(sel.value); });
+    $('#m-fecha').textContent = new Date().toLocaleDateString('es-MX',
+      { day:'2-digit', month:'long', year:'numeric' });
+    $('#imprimir').addEventListener('click', function(){ try{ window.print(); }catch(e){} });
+  }catch(e){
+    $('#tablas').innerHTML = '<p class="nota ojo">No se pudo cargar la tabla de datos. ' +
+      'Recarga la página; si sigue igual, avisa a 360Educa.</p>';
+  }
+})();
+</script>
+</body>
+</html>

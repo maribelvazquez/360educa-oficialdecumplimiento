@@ -284,3 +284,43 @@ tbody tr:nth-child(even) td{background:var(--verde-vela)}
   .leccion h2{font-size:14pt} .leccion h3{font-size:11pt} .leccion p,.leccion li{font-size:10pt}
   .usa{display:none}
 }
+
+/* ---------- Pestañas de lección (barra fija) ---------- */
+/* Se pega arriba y sigue visible al bajar. La lección activa se marca sola
+   con IntersectionObserver; sin JS sigue funcionando como lista de anclas. */
+.pestanas{position:sticky;top:0;z-index:40;margin:0 -20px 18px;padding:0 20px;
+  background:var(--fondo);
+  background:color-mix(in srgb,var(--fondo) 88%,transparent);
+  backdrop-filter:saturate(160%) blur(9px);-webkit-backdrop-filter:saturate(160%) blur(9px);
+  border-bottom:1px solid var(--linea)}
+.pestanas .carril{display:flex;gap:4px;overflow-x:auto;scrollbar-width:thin;
+  padding:8px 0;scroll-behavior:smooth}
+.pestanas .carril::-webkit-scrollbar{height:5px}
+.pestanas .carril::-webkit-scrollbar-thumb{background:var(--linea-fuerte);border-radius:5px}
+.pestanas a{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;
+  font-size:12.5px;font-weight:600;line-height:1;color:var(--tinta-3);
+  text-decoration:none;padding:8px 12px;border-radius:20px;white-space:nowrap;
+  border:1px solid transparent;transition:background .15s,color .15s,border-color .15s}
+.pestanas a:hover{background:var(--verde-vela);color:var(--verde-hondo)}
+.pestanas a .np{font-family:"Space Grotesk",sans-serif;font-size:11px;opacity:.75}
+.pestanas a.aqui{background:var(--verde);color:#fff;border-color:var(--verde)}
+.pestanas a.aqui .np{opacity:.9}
+@media (max-width:520px){.pestanas{margin:0 -17px 14px;padding:0 17px}
+  .pestanas a{font-size:12px;padding:7px 10px}}
+
+/* Que el ancla no quede debajo de la barra */
+.leccion{scroll-margin-top:66px}
+
+/* ---------- Descargables que sí son enlaces ---------- */
+a.arch{display:block;text-decoration:none;color:inherit;
+  transition:transform .15s,border-color .15s,box-shadow .15s}
+a.arch:hover{transform:translateY(-2px);border-color:var(--verde);
+  box-shadow:0 6px 18px rgba(0,0,0,.07)}
+a.arch h4{color:var(--verde-hondo)}
+a.arch .tipo{color:var(--verde-hondo)}
+.arch .abrir{display:inline-block;margin-top:9px;font-size:12.5px;font-weight:600;
+  color:var(--verde-hondo)}
+
+@media print{
+  .pestanas{display:none !important}
+}

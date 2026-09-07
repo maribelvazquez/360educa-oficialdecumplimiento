@@ -14,7 +14,7 @@ export default async (peticion) => {
   const clave = (process.env.ANTHROPIC_API_KEY || "").trim();
 
   const salida = {
-    version_desplegada: 'v1.6 · aula por sesiones',
+    version_desplegada: 'v1.7 · pestañas, descargables y biblioteca',
     listo: Boolean(clave),
     llave_configurada: Boolean(clave),
     origenes_configurados: Boolean(process.env.ORIGENES_PERMITIDOS),
