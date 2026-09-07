@@ -16,3 +16,25 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Content-Security-Policy = "frame-ancestors 'self' https://360educa.com https://*.360educa.com https://*.thinkific.com"
+
+# El HTML no se guarda en caché: si no, después de cada actualización el
+# navegador sigue sirviendo la versión anterior y parece que nada cambió.
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/estilo.css"
+  [headers.values]
+    Cache-Control = "no-cache, must-revalidate"
+
+[[headers]]
+  for = "/datos/*"
+  [headers.values]
+    Cache-Control = "no-cache, must-revalidate"

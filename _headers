@@ -1,4 +1,30 @@
+# Cabeceras del sitio · GMC360 · 360Educa
+# Refuerzan lo que ya dice netlify.toml y resuelven el caché.
+
 /*
   X-Robots-Tag: noindex, nofollow, noarchive, nosnippet
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
+
+# El HTML NUNCA se guarda en caché. Sin esto, el alumno —y tú al probar—
+# se quedan viendo la versión anterior después de cada actualización,
+# aunque Netlify ya haya publicado la nueva.
+/*.html
+  Cache-Control: no-cache, no-store, must-revalidate
+  Pragma: no-cache
+  Expires: 0
+
+/
+  Cache-Control: no-cache, no-store, must-revalidate
+
+# La hoja de estilo y los datos tampoco: cambian cuando cambia una herramienta
+# o cuando se actualiza un régimen por reforma.
+/estilo.css
+  Cache-Control: no-cache, must-revalidate
+
+/datos/*
+  Cache-Control: no-cache, must-revalidate
+
+# Las respuestas de las funciones jamás se guardan.
+/api/*
+  Cache-Control: no-store
