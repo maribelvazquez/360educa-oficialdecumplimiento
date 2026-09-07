@@ -37,7 +37,7 @@ const RESPALDOS = ['claude-sonnet-5', 'claude-haiku-4-5'];
 
 const MAX_CARACTERES = 4000;
 const MIN_CARACTERES = 20;
-const MAX_TOKENS = 900;
+const MAX_TOKENS = 2000;   // 900 no alcanzaba: el JSON se cortaba y no se podía leer
 const TIMEOUT_MS = 25000;
 
 const VENTANA_MS = 60 * 60 * 1000;     // una hora
@@ -64,10 +64,12 @@ sin texto antes ni después, con esta forma:
   "tipologias": [{"nombre": "nombre de la tipología", "peso": 1-10}],
   "senales": [{"texto": "señal de alerta observable", "peso": 1-5}],
   "parametro": {"variable": "qué se mide", "umbral": "valor o condición", "ventana": "periodo de observación"},
-  "narrativa": "borrador de narrativa para el reporte: qué se observó, cómo se detectó, qué verificó la institución y por qué se clasifica así. Cuatro a seis renglones."
+  "narrativa": "borrador de narrativa para el reporte: qué se observó, cómo se detectó, qué verificó la institución y por qué se clasifica así. Cuatro renglones, no más."
 }
 
 Reglas:
+- SÉ BREVE. Máximo 3 tipologías y máximo 6 señales. Cada texto, de una línea.
+  La respuesta completa debe caber holgadamente; si te alargas, el JSON se corta y se pierde todo.
 - Las señales deben ser OBSERVABLES, no interpretaciones ni juicios sobre la persona.
 - En "parametro" propón cómo parametrizarías el alertamiento en un sistema de monitoreo:
   qué variable, con qué umbral y en qué ventana de tiempo. Si no aplica, devuélvelo en null.
@@ -213,7 +215,16 @@ async function manejar(peticion) {
       const limpio = crudo.replace(/^```(?:json)?\s*|\s*```$/g, '');
       let analisis;
       try { analisis = JSON.parse(limpio); }
-      catch { return json(502, { error: 'respuesta_no_json', crudo: limpio.slice(0, 400) }, origen); }
+      catch {
+        return json(502, {
+          error: 'respuesta_no_json',
+          razon_de_corte: datos?.stop_reason || 'desconocida',
+          diagnostico: datos?.stop_reason === 'max_tokens'
+            ? 'La respuesta se cortó por el techo de tokens. Sube MAX_TOKENS en analizar.mjs.'
+            : 'La respuesta no vino en JSON válido.',
+          crudo: limpio.slice(0, 400),
+        }, origen);
+      }
       return json(200, { ...analisis, _modelo: modelo }, origen);
     } catch (e) {
       if (e?.name === 'TimeoutError' || e?.name === 'AbortError')

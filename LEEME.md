@@ -130,7 +130,9 @@ Por eso lo que de verdad protege son otras dos cosas, y las dos son cuantitativa
 
 Calibrados para autoestudio de un mes, no para un taller de una hora:
 
-- 4,000 caracteres de entrada y 900 tokens de salida.
+- 4,000 caracteres de entrada y 2,000 tokens de salida. **Con 900 no alcanzaba**: el JSON
+  se cortaba a media palabra, no se podía leer, y la herramienta caía al motor local sin
+  que se viera por qué. Se paga lo que el modelo genera, no el techo.
 - 40 análisis por dirección cada hora. Un alumno normal no lo toca.
 - **Tope mensual global de 3,000 llamadas, con corte duro**, en la función.
 - **Límite de gasto en la Claude Console** (`platform.claude.com/settings/billing` →
@@ -140,10 +142,10 @@ Calibrados para autoestudio de un mes, no para un taller de una hora:
 Con esos dos, el peor escenario imaginable —que alguien encuentre la función y la ordeñe
 todo el mes— cuesta veinte dólares. No hay nada más que valga la pena defender.
 
-Con Sonnet 5 (2 dólares de entrada y 10 de salida por millón de tokens), cada análisis
-cuesta alrededor de **0.009 dólares**. Con 50 alumnos a 40 análisis cada uno, el gasto
-del curso son unos **331 pesos** contra 245,000 de ingreso: el 0.14 %. El tope de 3,000
-acota el daño máximo de una fuga a unos 27 dólares.
+Con Sonnet 5 (2 dólares de entrada y 10 de salida por millón de tokens), y con una
+respuesta real de unos mil tokens, cada análisis cuesta alrededor de **0.012 dólares**.
+Con 50 alumnos a 40 análisis cada uno son unos **440 pesos** contra 245,000 de ingreso:
+el 0.18 %. El tope de 3,000 acota el gasto máximo del mes a unos 36 dólares.
 
 **No se usa Firebase.** En el taller de AMSOFIPO existe porque hay una facilitadora, un
 copiloto y participantes viendo el mismo tablero al mismo tiempo. Aquí el curso es de
