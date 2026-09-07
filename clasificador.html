@@ -137,7 +137,7 @@ function pintarCargando(){
 
 // ── Motor local de respaldo. No es la inteligencia artificial: es una lectura
 //    por palabras clave, para que la herramienta nunca deje al alumno en blanco.
-function motorLocal(texto){
+function motorLocal(texto, motivo){
   const t = texto.toLowerCase();
   const tiene = (...ws) => ws.some(w => t.includes(w));
   const senales = [];
@@ -179,8 +179,8 @@ function motorLocal(texto){
     tipologias: [],
     senales,
     parametro: null,
-    narrativa: 'El servicio de análisis no respondió, así que ésta es una lectura local por palabras clave y no sustituye al análisis completo. Toma las señales de abajo como punto de partida y redacta tú la narrativa.',
-    _local: true,
+    narrativa: 'El servicio de análisis no respondió, así que ésta es una lectura local por palabras clave y no sustituye al análisis completo. Toma las señales de arriba como punto de partida y redacta tú la narrativa.',
+    _local: true, _motivo: motivo || '',
   };
 }
 
@@ -229,6 +229,7 @@ function pintar(a, clave, texto){
       <h2>${esc(c || 'Sin clasificación')}</h2>
       ${a.plazo ? `<p>${esc(a.plazo)}</p>` : ''}
       <span class="motor-usado">${a._local ? 'Lectura local por reglas' : 'Análisis con inteligencia artificial'}</span>
+      ${a._local && a._motivo ? `<p class="no-papel" style="margin-top:8px;font-size:11.5px;color:var(--tinta-3)">Motivo técnico: ${esc(a._motivo)} · Si esto le pasa a un alumno, avisa a 360Educa.</p>` : ''}
     </div>
 
     <section class="bloque"><h3>Lo que describiste</h3>
@@ -279,11 +280,15 @@ async function analizar(){
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ texto, sector: s ? s.nombre : clave }),
     });
-    if (!r.ok) throw new Error('estado ' + r.status);
+    if (!r.ok) {
+      let detalle = '';
+      try { const j = await r.json(); detalle = j.error ? ' · ' + j.error : ''; } catch (e2) {}
+      throw new Error('la función respondió ' + r.status + detalle);
+    }
     analisis = await r.json();
     if (!analisis || !analisis.clasificacion) throw new Error('respuesta incompleta');
   } catch (e) {
-    analisis = motorLocal(texto);
+    analisis = motorLocal(texto, String(e && e.message || e));
   }
   pintar(analisis, clave, texto);
   $('#analizar').disabled = false;
